@@ -1,0 +1,9 @@
+{
+	classes: [
+		{ id: "background", type: "static", texture: "background.png", width: 1024, height: 1024 },
+		{ id: "witch", type: "dynamic", texture: "witch2.png", width: 512, height: 512 }
+	],
+	entities: [
+		{ class: "witch", x:   10, y: 100 }
+	]
+}
