@@ -1,13 +1,16 @@
-{
-	settings: {
-		width: 100,
-		height: 100
-	},
-	classes: [
-		{ id: "background", type: "static", texture: "background.png" },
-		{ id: "witch", type: "dynamic", texture: "witch2.png" }
+[
+	[
+		{ class: "land" },
+		{ class: "witch_hat", x: 0, y: 200 }
 	],
-	entities: [
-		{ class: "witch", x: 10, y: 100 }
+	
+	[
+		{ class: "land" },
+		{ class: "witch_hat", x: -200, y: 0 },
+		{ class: "witch" }
+	],
+	[
+		{ class: "land" }
 	]
-}
+
+]

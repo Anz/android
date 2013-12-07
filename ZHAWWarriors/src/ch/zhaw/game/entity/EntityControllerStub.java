@@ -1,7 +1,7 @@
 package ch.zhaw.game.entity;
 
 
-public class EntityListenerStub implements EntityListener {
+public class EntityControllerStub implements EntityController {
 	@Override
 	public void onContact(Entity entity) {}
 	

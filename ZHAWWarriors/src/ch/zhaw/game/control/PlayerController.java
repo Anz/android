@@ -1,27 +1,49 @@
 package ch.zhaw.game.control;
 
-import android.util.Log;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.andengine.opengl.texture.region.TextureRegion;
+
+import ch.zhaw.game.entity.Category;
 import ch.zhaw.game.entity.Entity;
-import ch.zhaw.game.entity.EntityListener;
-import ch.zhaw.game.entity.EntityListenerStub;
+import ch.zhaw.game.entity.EntityController;
+import ch.zhaw.game.entity.EntityControllerStub;
 import ch.zhaw.game.entity.TouchListener;
+import ch.zhaw.game.resource.ResourceManager;
+import ch.zhaw.game.resource.TextureEntity;
+import ch.zhaw.game.scene.GameScene;
 
 import com.badlogic.gdx.math.Vector2;
 
-public class PlayerController extends EntityListenerStub implements EntityListener, TouchListener {
-	private static long FRAME_SPEED[] = { 200l, 200l, 200l, 200l };
+public class PlayerController extends EntityControllerStub implements EntityController, TouchListener {
 	private Entity entity;
+	private TextureEntity textureEntity;
 	
-	public PlayerController(Entity entity) {
+	public PlayerController(Entity entity, TextureEntity textureEntity) {
 		this.entity = entity;
+		this.textureEntity = textureEntity;
 	}
 	
 	@Override
 	public void onContact(Entity entity) {
-//		entity.move(null);
-//		if (!entity.getSprite().isAnimationRunning()) {
-			entity.getSprite().animate(FRAME_SPEED, 4, 8, true);
-//		}
+		if (entity.getEntityType() == Category.ENEMY) {
+			this.entity.move(null);
+			this.entity.getSprite().animate(Entity.FRAME_SPEED, 4, 7, true);
+		}
+		
+		if (entity.getEntityType() == Category.ITEM) {
+			entity.destroy();
+
+			
+			final GameScene scene =  this.entity.getScene();
+			final ResourceManager resourceManager = scene.getResourceManager();
+			
+			List<TextureRegion> textureList = new ArrayList<TextureRegion>();
+			textureList.add(new TextureRegion(resourceManager.getTexture("knight.png").getTexture(), 0f, 0f, 512f, 512f));
+			textureList.add(new TextureRegion(resourceManager.getTexture("witch_hat.png").getTexture(), 0f, 0f, 512f, 512f));
+			textureEntity.update(textureList);
+		}
 	}
 
 	@Override
@@ -31,7 +53,9 @@ public class PlayerController extends EntityListenerStub implements EntityListen
 
 	@Override
 	public void onTouch(Entity entity) {
-		Log.i("tag", "gotcha");
-		entity.chase(entity);
+		if (entity.getBody() == null) {
+			return;
+		}
+		entity.move(entity.getBody().getPosition());
 	}
 }

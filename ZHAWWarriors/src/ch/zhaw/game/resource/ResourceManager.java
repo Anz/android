@@ -30,11 +30,14 @@ public class ResourceManager {
 	}
 
 	public TiledTextureRegion loadTexture(String name, int width, int height, int xFrames, int yFrames) {
-		BitmapTextureAtlas texture = new BitmapTextureAtlas(textureManager, width, height, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-		TiledTextureRegion textureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(texture, context, name, 0, 0, xFrames, yFrames);
-		imgs.put(name, textureRegion);
-		texture.load();
-		return textureRegion;
+		if (!imgs.containsKey(name)) {
+			BitmapTextureAtlas texture = new BitmapTextureAtlas(textureManager, width, height, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+			TiledTextureRegion textureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(texture, context, name, 0, 0, xFrames, yFrames);
+			texture.load();
+			imgs.put(name, textureRegion);
+		}
+		
+		return imgs.get(name);
 	}
 	
 	public TiledTextureRegion getTexture(String name) {

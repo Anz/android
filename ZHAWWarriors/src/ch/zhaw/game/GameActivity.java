@@ -1,17 +1,22 @@
 package ch.zhaw.game;
 
-import org.andengine.engine.camera.BoundCamera;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.andengine.engine.camera.Camera;
+import org.andengine.engine.camera.SmoothCamera;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.FillResolutionPolicy;
 import org.andengine.entity.scene.Scene;
+import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 
 import ch.zhaw.game.control.PlayerController;
 import ch.zhaw.game.entity.Category;
 import ch.zhaw.game.entity.Entity;
 import ch.zhaw.game.resource.ResourceManager;
+import ch.zhaw.game.resource.TextureEntity;
 import ch.zhaw.game.scene.GameScene;
 import ch.zhaw.game.scene.GameSceneFactory;
 
@@ -23,7 +28,8 @@ public class GameActivity extends SimpleBaseGameActivity {
 	
 	@Override
 	public EngineOptions onCreateEngineOptions() {
-		camera = new BoundCamera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
+		//camera = new BoundCamera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
+		camera = new SmoothCamera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT, 500, 500, 100);
 		EngineOptions engineOptions = new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, new FillResolutionPolicy(), camera);
 		engineOptions.getRenderOptions().setDithering(true);
 		return engineOptions;
@@ -37,18 +43,26 @@ public class GameActivity extends SimpleBaseGameActivity {
 			
 			scene = GameSceneFactory.loadScene(resourceManager, "scene/land.json");
 			
+			resourceManager.loadTexture("knight.png", 512, 512, 4, 3);
+			
 			// create player
-			resourceManager.loadTexture("knight.png", 512, 512, 4, 4);
-			Entity entity = scene.createEntity(Category.PLAYER, 10, 0, "knight.png", true, false);
+			List<TextureRegion> textureList = new ArrayList<TextureRegion>();
+			textureList.add(new TextureRegion(resourceManager.getTexture("knight.png").getTexture(), 0f, 0f, 512f, 512f));
+			TextureEntity texture = scene.createTextureEntity(512, 512, textureList);
+			
+			Entity entity = scene.createEntity(Category.PLAYER, 0, 0, texture.getTiledTextureRegion(4, 3), true, false);
 			entity.setSpeed(10);
+			PlayerController playerController = new PlayerController(entity, texture);
+			entity.setEntityListener(playerController);
 			camera.setChaseEntity(entity.getSprite());
 			camera.setCenter(entity.getSprite().getX(), entity.getSprite().getY());
 			
 			
-			scene.registerTouchListener(new PlayerController(entity));
+			scene.registerTouchListener(playerController);
 			return scene;
 		} catch (Exception e) {
 			e.printStackTrace();
+			System.exit(1);
 			return null;
 		}
 	}
