@@ -9,7 +9,6 @@ import org.andengine.engine.camera.Camera;
 import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
-import org.andengine.entity.scene.background.Background;
 import org.andengine.extension.physics.box2d.FixedStepPhysicsWorld;
 import org.andengine.extension.physics.box2d.PhysicsFactory;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
@@ -40,12 +39,11 @@ public class GameScene extends Scene implements ContactListener, IOnSceneTouchLi
 	private List<Entity> entities = new LinkedList<Entity>();
 	private Set<Entity> removable = new HashSet<Entity>();
 	private TouchListener touchListener = null;
-	public boolean rendertexture = true;
+	private float width;
+	private float height;
 	
-	public GameScene(ResourceManager resourceManager) {
+	public GameScene(ResourceManager resourceManager, float width, float height) {
 		this.resourceManager = resourceManager;
-		
-		setBackground(new Background(0.3f, 0.3f, 0.3f));
 		
 		physicsWorld = new FixedStepPhysicsWorld(60, new Vector2(0, 0), true);
 		registerUpdateHandler(physicsWorld);
@@ -55,6 +53,9 @@ public class GameScene extends Scene implements ContactListener, IOnSceneTouchLi
 		
 		// set touch listener
 		setOnSceneTouchListener(this);
+		
+		// create map
+		createMap(width, height);
 	}
 
 	public PhysicsWorld getPhysicsWorld() {
@@ -65,18 +66,31 @@ public class GameScene extends Scene implements ContactListener, IOnSceneTouchLi
 		return resourceManager;
 	}
 	
-	public void createMap(float width, float height) {
+	private void createMap(float width, float height) {
+		this.width = width;
+		this.height = height;
+		
 		final float THICKNESS = 100;
 		FixtureDef fixture = PhysicsFactory.createFixtureDef(0, 0.01f, 0.5f);
-		PhysicsFactory.createBoxBody(physicsWorld, width/2, height/2+THICKNESS/2, width, THICKNESS, 0, BodyType.StaticBody, fixture);
-		PhysicsFactory.createBoxBody(physicsWorld, width/2, -height/2-THICKNESS/2, width, THICKNESS, 0, BodyType.StaticBody, fixture);
-		PhysicsFactory.createBoxBody(physicsWorld, -THICKNESS/2, 0, THICKNESS, height, 0, BodyType.StaticBody, fixture);
-		PhysicsFactory.createBoxBody(physicsWorld, width+THICKNESS/2, 0, THICKNESS, height, 0, BodyType.StaticBody, fixture);
+//		PhysicsFactory.createBoxBody(physicsWorld, width/2, height/2+THICKNESS/2, width, THICKNESS, 0, BodyType.StaticBody, fixture);
+//		PhysicsFactory.createBoxBody(physicsWorld, width/2, -height/2-THICKNESS/2, width, THICKNESS, 0, BodyType.StaticBody, fixture);
+//		PhysicsFactory.createBoxBody(physicsWorld, -THICKNESS/2, 0, THICKNESS, height, 0, BodyType.StaticBody, fixture);
+//		PhysicsFactory.createBoxBody(physicsWorld, width+THICKNESS/2, 0, THICKNESS, height, 0, BodyType.StaticBody, fixture);
 		
-		createRectangle(width/2, height/2+THICKNESS/2, width, THICKNESS);
-		createRectangle(width/2, -height/2-THICKNESS/2, width, THICKNESS);
-		createRectangle(THICKNESS/2, 0f, THICKNESS, height);
-		createRectangle(width+THICKNESS/2, 0f, THICKNESS, height);
+		PhysicsFactory.createBoxBody(physicsWorld, width/2, height+THICKNESS/2, width, THICKNESS, 0, BodyType.StaticBody, fixture);
+		PhysicsFactory.createBoxBody(physicsWorld, width/2, -THICKNESS/2, width, THICKNESS, 0, BodyType.StaticBody, fixture);
+		PhysicsFactory.createBoxBody(physicsWorld, -THICKNESS/2, height/2, THICKNESS, height, 0, BodyType.StaticBody, fixture);
+		PhysicsFactory.createBoxBody(physicsWorld, width+THICKNESS/2, height/2, THICKNESS, height, 0, BodyType.StaticBody, fixture);
+		
+//		createRectangle(width/2, height+THICKNESS/2, width, THICKNESS);
+//		createRectangle(width/2, -THICKNESS/2, width, THICKNESS);
+//		createRectangle(-THICKNESS/2, height/2, THICKNESS, height);
+//		createRectangle(width+THICKNESS/2, height/2, THICKNESS, height);
+		
+//		createRectangle(width/2, height/2+THICKNESS/2, width, THICKNESS);
+//		createRectangle(width/2, -height/2-THICKNESS/2, width, THICKNESS);
+//		createRectangle(THICKNESS/2, 0f, THICKNESS, height);
+//		createRectangle(width+THICKNESS/2, 0f, THICKNESS, height);
 	}
 	
 	public void createRectangle(float x, float y, float width, float height) {
@@ -222,4 +236,12 @@ public class GameScene extends Scene implements ContactListener, IOnSceneTouchLi
 
 	@Override
 	public void postSolve(Contact contact, ContactImpulse impulse) {}
+
+	public float getWidth() {
+		return width;
+	}
+
+	public float getHeight() {
+		return height;
+	}
 }

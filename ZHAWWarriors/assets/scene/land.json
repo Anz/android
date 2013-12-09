@@ -1,7 +1,7 @@
 [
 	[
 		{ class: "land" },
-		{ class: "witch_hat", x: 0, y: 200 }
+		{ class: "witch_hat"  }
 	],
 	
 	[
@@ -11,6 +11,11 @@
 	],
 	[
 		{ class: "land" }
+	],
+	[
+		{ class: "land" },
+		{ class: "witch" },
+		{ class: "witch", y: -200 }
 	]
 
 ]

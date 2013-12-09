@@ -18,6 +18,7 @@ import com.badlogic.gdx.math.Vector2;
 
 public class PlayerController extends EntityControllerStub implements EntityController, TouchListener {
 	private Entity entity;
+	private Entity targetEntity;
 	private TextureEntity textureEntity;
 	
 	public PlayerController(Entity entity, TextureEntity textureEntity) {
@@ -27,7 +28,7 @@ public class PlayerController extends EntityControllerStub implements EntityCont
 	
 	@Override
 	public void onContact(Entity entity) {
-		if (entity.getEntityType() == Category.ENEMY) {
+		if (entity.getEntityType() == Category.ENEMY && targetEntity == entity) {
 			this.entity.move(null);
 			this.entity.getSprite().animate(Entity.FRAME_SPEED, 4, 7, true);
 		}
@@ -48,6 +49,7 @@ public class PlayerController extends EntityControllerStub implements EntityCont
 
 	@Override
 	public void onTouch(Vector2 position) {
+		targetEntity = null;
 		entity.move(position);
 	}
 
@@ -56,6 +58,7 @@ public class PlayerController extends EntityControllerStub implements EntityCont
 		if (entity.getBody() == null) {
 			return;
 		}
+		targetEntity = entity;
 		entity.move(entity.getBody().getPosition());
 	}
 }

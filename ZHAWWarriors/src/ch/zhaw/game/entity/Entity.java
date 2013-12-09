@@ -32,7 +32,7 @@ public class Entity implements EntityController {
 	public Entity(GameScene scene, Category category, float x, float y, TiledTextureRegion texture, boolean body, boolean sensor) {
 		this.scene = scene;
 		this.category = category;
-		this.sprite = new Sprite(scene, this, x, y, texture, scene.getResourceManager().getVboManager());
+		this.sprite = new Sprite(scene, this, x - texture.getWidth()/2, y - texture.getHeight()/2, texture, scene.getResourceManager().getVboManager());
 		scene.registerTouchArea(sprite);
 		
 		if (body)
