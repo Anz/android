@@ -172,4 +172,13 @@ public class GameScene extends Scene  /*ContactListener,*/ {
 		return entities;
 	}
 	
+	public Entity getPlayer() {
+		for (Entity entity : entities) {
+			if (entity.getEntityType() == Category.PLAYER) {
+				return entity;
+			}
+		}
+		return null;
+	}
+	
 }

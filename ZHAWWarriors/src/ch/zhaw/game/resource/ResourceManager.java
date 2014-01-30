@@ -12,26 +12,23 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 
 import android.content.res.AssetManager;
+import android.util.DisplayMetrics;
 
 public class ResourceManager {	
 	private Map<String, TiledTextureRegion> imgs = new HashMap<String, TiledTextureRegion>();
 	private SimpleBaseGameActivity context;
-	private AssetManager assetManager;
-	private TextureManager textureManager;
-	private VertexBufferObjectManager vboManager;
+	private DisplayMetrics displayMetrics = new DisplayMetrics();
 	
-	public ResourceManager(SimpleBaseGameActivity context, AssetManager assetManager, VertexBufferObjectManager vboManager, TextureManager textureManager) {
+	public ResourceManager(SimpleBaseGameActivity context) {
 		this.context = context;
-		this.assetManager = assetManager;
-		this.textureManager = textureManager;
-		this.vboManager = vboManager;
+		context.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 		
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 	}
 
 	public TiledTextureRegion loadTexture(String name, int width, int height, int xFrames, int yFrames) {
 		if (!imgs.containsKey(name)) {
-			BitmapTextureAtlas texture = new BitmapTextureAtlas(textureManager, width, height, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+			BitmapTextureAtlas texture = new BitmapTextureAtlas(context.getTextureManager(), width, height, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 			TiledTextureRegion textureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(texture, context, name, 0, 0, xFrames, yFrames);
 			texture.load();
 			imgs.put(name, textureRegion);
@@ -45,7 +42,7 @@ public class ResourceManager {
 	}
 
 	public AssetManager getAssetManager() {
-		return assetManager;
+		return context.getAssets();
 	}
 
 	public SimpleBaseGameActivity getContext() {
@@ -53,10 +50,18 @@ public class ResourceManager {
 	}
 
 	public TextureManager getTextureManager() {
-		return textureManager;
+		return context.getTextureManager();
 	}
 
 	public VertexBufferObjectManager getVboManager() {
-		return vboManager;
+		return context.getVertexBufferObjectManager();
+	}
+	
+	public int getDisplayWidth() {
+		return displayMetrics.widthPixels;
+	}
+	
+	public int getDisplayHeight() {
+		return displayMetrics.heightPixels;
 	}
 }
