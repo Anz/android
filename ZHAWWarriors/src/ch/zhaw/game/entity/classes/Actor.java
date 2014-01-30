@@ -16,10 +16,18 @@ public class Actor implements EntityClass {
 
 	@Override
 	public Entity createInstance(GameScene scene, float x, float y) {
+		Entity target = null;
+		for (Entity entity : scene.getEntities()) {
+			if (entity.getEntityType() == Category.PLAYER) {
+				target = entity;
+				break;
+			}
+		}
+		
 		TiledTextureRegion texture = scene.getResourceManager().loadTexture(img, 512, 512, 4, 3);
-		Entity entity = scene.createEntity(Category.ENEMY, x, y, texture, true, true);
+		Entity entity = scene.createEntity(Category.ENEMY, x, y, texture, true);
 		entity.setSpeed(3);
-		entity.setEntityListener(new EnemyController(entity));
+		entity.setEntityController(new EnemyController(entity, target));
 		return entity;
 	}
 	

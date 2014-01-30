@@ -7,11 +7,18 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import ch.zhaw.game.entity.Category;
 import ch.zhaw.game.entity.classes.Actor;
+import ch.zhaw.game.entity.classes.Destructable;
 import ch.zhaw.game.entity.classes.EntityClass;
 import ch.zhaw.game.entity.classes.Item;
+import ch.zhaw.game.entity.classes.Player;
 import ch.zhaw.game.entity.classes.Tile;
+import ch.zhaw.game.entity.classes.Trigger;
 import ch.zhaw.game.resource.ResourceManager;
+
+import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 
 public class GameSceneFactory {
 	private static final Map<String, EntityClass> entityClasses = new HashMap<String, EntityClass>() {
@@ -24,10 +31,16 @@ public class GameSceneFactory {
 			put("witch_hat", new Item("witch_hat.png", "witch_hat.png"));
 
 			// destructables
-			put("box", new Item("box.png", "box.png"));
+			put("box", new Destructable("box_ani.png"));
+			
+			// trigger
+			put("trigger", new Trigger());
 			
 			// actors
 			put("witch", new Actor("witch2.png"));
+			
+			// players
+			put("player", new Player("knight.png"));
 		};
 	};
 
@@ -81,5 +94,15 @@ public class GameSceneFactory {
 		}
 
 		return scene;
+	}
+	
+	public static FixtureDef createCircularFixture(Category category) {
+		CircleShape shape = new CircleShape();
+		shape.setRadius(0.5f);
+		
+		FixtureDef fixtureDef = new FixtureDef();
+		fixtureDef.filter.groupIndex = (short) -category.ordinal();
+		fixtureDef.shape = shape;
+		return fixtureDef;
 	}
 }

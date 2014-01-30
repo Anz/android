@@ -3,31 +3,34 @@ package ch.zhaw.game.control;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.andengine.entity.scene.IOnSceneTouchListener;
+import org.andengine.entity.scene.Scene;
+import org.andengine.extension.physics.box2d.util.constants.PhysicsConstants;
+import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.region.TextureRegion;
 
 import ch.zhaw.game.entity.Category;
 import ch.zhaw.game.entity.Entity;
 import ch.zhaw.game.entity.EntityController;
-import ch.zhaw.game.entity.EntityControllerStub;
-import ch.zhaw.game.entity.TouchListener;
 import ch.zhaw.game.resource.ResourceManager;
 import ch.zhaw.game.resource.TextureEntity;
 import ch.zhaw.game.scene.GameScene;
 
 import com.badlogic.gdx.math.Vector2;
 
-public class PlayerController extends EntityControllerStub implements EntityController, TouchListener {
-	private Entity entity;
+public class PlayerController extends EntityController implements IOnSceneTouchListener {
 	private Entity targetEntity;
 	private TextureEntity textureEntity;
 	
 	public PlayerController(Entity entity, TextureEntity textureEntity) {
-		this.entity = entity;
+		super(entity);
 		this.textureEntity = textureEntity;
 	}
 	
 	@Override
-	public void onContact(Entity entity) {
+	public void onContact(EntityController entityController) {
+		Entity entity = entityController.getEntity();
+		
 		if (entity.getEntityType() == Category.ENEMY && targetEntity == entity) {
 			this.entity.move(null);
 			this.entity.getSprite().animate(Entity.FRAME_SPEED, 4, 7, true);
@@ -46,19 +49,25 @@ public class PlayerController extends EntityControllerStub implements EntityCont
 			textureEntity.update(textureList);
 		}
 	}
-
+	
 	@Override
-	public void onTouch(Vector2 position) {
-		targetEntity = null;
-		entity.move(position);
-	}
-
-	@Override
-	public void onTouch(Entity entity) {
-		if (entity.getBody() == null) {
-			return;
+	public boolean onSceneTouchEvent(Scene scene, TouchEvent touchEvent) {
+		if (touchEvent.getAction() == TouchEvent.ACTION_DOWN) {
+			Vector2 target = new Vector2(touchEvent.getX(), touchEvent.getY());
+			target.mul(1f/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
+			targetEntity = null;
+			entity.move(target);
 		}
-		targetEntity = entity;
-		entity.move(entity.getBody().getPosition());
+		return false;
 	}
+
+//	@Override
+//	public void onTouch(Entity entity) {
+//		if (entity.getEntityType() == Category.STATIC) {
+//			return;
+//		}
+//		targetEntity = entity;
+//		entity.move(entity.getBody().getPosition());
+//	}
+	
 }

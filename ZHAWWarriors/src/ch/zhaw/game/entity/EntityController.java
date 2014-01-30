@@ -1,9 +1,18 @@
 package ch.zhaw.game.entity;
 
 
-public interface EntityController {
-	public void onContact(Entity entity);
-	public void onContactEnd(Entity entity);
-	public void onSensor(Entity entity);
-	public void onSensorEnd(Entity entity);
+public class EntityController {
+	protected Entity entity;
+	
+	public EntityController(Entity entity) {
+		this.entity = entity;
+	}
+	
+	public void onContact(EntityController entity) {}
+	
+	public void onContactEnd(EntityController entity) {}
+
+	public Entity getEntity() {
+		return entity;
+	}
 }

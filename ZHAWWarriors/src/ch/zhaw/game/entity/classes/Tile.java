@@ -17,7 +17,7 @@ public class Tile implements EntityClass {
 	@Override
 	public Entity createInstance(GameScene scene, float x, float y) {
 		TiledTextureRegion texture = scene.getResourceManager().loadTexture(img, 1024, 1024, 1, 1);
-		return scene.createEntity(Category.STATIC, x, y, img, false, false);
+		return scene.createEntity(Category.STATIC, x, y, img, false);
 	}
 	
 	

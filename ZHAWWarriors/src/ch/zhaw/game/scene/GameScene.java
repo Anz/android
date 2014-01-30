@@ -7,13 +7,10 @@ import java.util.Set;
 
 import org.andengine.engine.camera.Camera;
 import org.andengine.entity.primitive.Rectangle;
-import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
 import org.andengine.extension.physics.box2d.FixedStepPhysicsWorld;
 import org.andengine.extension.physics.box2d.PhysicsFactory;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
-import org.andengine.extension.physics.box2d.util.constants.PhysicsConstants;
-import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.opengl.util.GLState;
@@ -22,18 +19,15 @@ import org.andengine.util.color.Color;
 import ch.zhaw.game.entity.Category;
 import ch.zhaw.game.entity.Entity;
 import ch.zhaw.game.entity.TouchListener;
+import ch.zhaw.game.physics.CollsisionHandler;
 import ch.zhaw.game.resource.ResourceManager;
 import ch.zhaw.game.resource.TextureEntity;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.ContactImpulse;
-import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.Manifold;
 
-public class GameScene extends Scene implements ContactListener, IOnSceneTouchListener {
+public class GameScene extends Scene  /*ContactListener,*/ {
 	protected ResourceManager resourceManager;
 	protected PhysicsWorld physicsWorld;
 	private List<Entity> entities = new LinkedList<Entity>();
@@ -49,10 +43,7 @@ public class GameScene extends Scene implements ContactListener, IOnSceneTouchLi
 		registerUpdateHandler(physicsWorld);
 		
 		// set world contact listener
-		physicsWorld.setContactListener(this);
-		
-		// set touch listener
-		setOnSceneTouchListener(this);
+		physicsWorld.setContactListener(new CollsisionHandler());
 		
 		// create map
 		createMap(width, height);
@@ -100,15 +91,13 @@ public class GameScene extends Scene implements ContactListener, IOnSceneTouchLi
 		attachChild(rect);
 	}
 	
-	public Entity createEntity(Category category, float x, float y, String texture, boolean body, boolean sensor) {
-		Entity entity = new Entity(this, category, x, y, texture, body, sensor);
-		entities.add(entity);
-		attachChild(entity.getSprite());
-		return entity;
+	public Entity createEntity(Category category, float x, float y, String texture, boolean dynamic) {
+		return createEntity(category, x, y, resourceManager.getTexture(texture), dynamic);
 	}
 	
-	public Entity createEntity(Category category, float x, float y, TiledTextureRegion texture, boolean body, boolean sensor) {
-		Entity entity = new Entity(this, category, x, y, texture, body, sensor);
+	public Entity createEntity(Category category, float x, float y, TiledTextureRegion texture, boolean dynamic) {
+		Entity entity = new Entity(this, category, x, y, texture, dynamic);
+		entity.createFixture(GameSceneFactory.createCircularFixture(category));
 		entities.add(entity);
 		attachChild(entity.getSprite());
 		return entity;
@@ -152,22 +141,12 @@ public class GameScene extends Scene implements ContactListener, IOnSceneTouchLi
 		for (Entity entity : entities) {
 			int zindex = -1000000;
 			
-			if (entity.getBody() != null) {
+			if (entity.getEntityType() != Category.STATIC) {
 				zindex = Math.round(entity.getBody().getPosition().y * 1000);
 			}
 			entity.getSprite().setZIndex(zindex);
 		}
 		sortChildren();
-	}
-
-	@Override
-	public boolean onSceneTouchEvent(Scene pScene, TouchEvent touchEvent) {
-		if (touchListener != null && touchEvent.getAction() == TouchEvent.ACTION_DOWN) {
-			Vector2 target = new Vector2(touchEvent.getX(), touchEvent.getY());
-			target.mul(1f/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
-			touchListener.onTouch(target);
-		}
-		return false;
 	}
 	
 	public boolean onSceneTouchEvent(Entity entity) {
@@ -181,62 +160,6 @@ public class GameScene extends Scene implements ContactListener, IOnSceneTouchLi
 		this.touchListener = touchListener;
 	}
 
-	@Override
-	public void beginContact(Contact contact) {
-		Object userdataA = contact.getFixtureA().getBody().getUserData();
-		Object userdataB = contact.getFixtureB().getBody().getUserData();
-		
-		if (!(userdataA instanceof Entity && userdataB instanceof Entity)) {
-			return;
-		}
-		
-		Entity entityA = (Entity) userdataA;
-		Entity entityB = (Entity) userdataB;
-		
-		if (contact.getFixtureA().isSensor()) {
-			entityA.onSensor(entityB);
-		} else if (!contact.getFixtureB().isSensor()) {
-			entityA.onContact(entityB);
-		}
-		
-		if (contact.getFixtureB().isSensor()) {
-			entityB.onSensor(entityA);
-		} else if (!contact.getFixtureA().isSensor()) {
-			entityB.onContact(entityA);
-		}
-	}
-
-	@Override
-	public void endContact(Contact contact) {
-		Object userdataA = contact.getFixtureA().getBody().getUserData();
-		Object userdataB = contact.getFixtureB().getBody().getUserData();
-		
-		if (!(userdataA instanceof Entity && userdataB instanceof Entity)) {
-			return;
-		}
-		
-		Entity entityA = (Entity) userdataA;
-		Entity entityB = (Entity) userdataB;
-		
-		if (contact.getFixtureA().isSensor()) {
-			entityA.onSensorEnd(entityB);
-		} else if (!contact.getFixtureB().isSensor()) {
-			entityA.onContactEnd(entityB);
-		}
-		
-		if (contact.getFixtureB().isSensor()) {
-			entityB.onSensorEnd(entityA);
-		} else if (!contact.getFixtureA().isSensor()) {
-			entityB.onContactEnd(entityA);
-		}
-	}
-
-	@Override
-	public void preSolve(Contact contact, Manifold oldManifold) {}
-
-	@Override
-	public void postSolve(Contact contact, ContactImpulse impulse) {}
-
 	public float getWidth() {
 		return width;
 	}
@@ -244,4 +167,9 @@ public class GameScene extends Scene implements ContactListener, IOnSceneTouchLi
 	public float getHeight() {
 		return height;
 	}
+
+	public List<Entity> getEntities() {
+		return entities;
+	}
+	
 }

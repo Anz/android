@@ -1,7 +1,9 @@
 [
 	[
 		{ class: "land" },
-		{ class: "witch_hat"  }
+		{ class: "player", x: -100 },
+		{ class: "witch_hat"  },
+		{ class: "box", x: 100  }
 	],
 	
 	[

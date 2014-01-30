@@ -1,51 +1,48 @@
 package ch.zhaw.game.control;
 
 import org.andengine.engine.camera.Camera;
-import org.andengine.engine.handler.IUpdateHandler;
 
 import ch.zhaw.game.Util;
 import ch.zhaw.game.entity.Entity;
 import ch.zhaw.game.scene.GameScene;
 
 
-public class CameraController implements IUpdateHandler {
+public class CameraController extends Camera {
 	private Entity entity;
-	private Camera camera;
 	private float leftLimit;
 	private float rightLimit;
 	private float topLimit;
 	private float bottomLimit;
 	
-	public CameraController(Entity entity, Camera camera) {
-		super();
-		this.entity = entity;
-		this.camera = camera;
-		
-		// calculate boundries
-		GameScene scene = entity.getScene();
-		leftLimit = camera.getWidth()/2;
-		bottomLimit = -camera.getHeight() / 2;
-		rightLimit = scene.getWidth() - camera.getWidth()/2;
-		topLimit = -(scene.getHeight() - camera.getHeight())/2;
-		
-		// register
-		this.entity.getScene().registerUpdateHandler(this);
+	public CameraController(float width, float height) {
+		super(0, 0, width, height);
 	}
 	
 	@Override
 	public void onUpdate(float pSecondsElapsed) {
-		float x = Util.limit(entity.getSprite().getX(), leftLimit, rightLimit);
-		float y = Util.limit(entity.getSprite().getY(), bottomLimit, topLimit);
+		super.onUpdate(pSecondsElapsed);
+		
+		if (entity == null) {
+			return;
+		}
 		
 		// set camera
-		camera.setCenter(x, y);		
+		float x = Util.limit(entity.getSprite().getX(), leftLimit, rightLimit);
+		float y = Util.limit(entity.getSprite().getY(), bottomLimit, topLimit);
+		setCenter(x, y);		
 	}
 	
-	@Override
-	public void reset() {
-		// unregister
-		this.entity.getScene().unregisterUpdateHandler(this);
+	public void chase(Entity entity) {
+		this.entity = entity;
+		
+		// calculate boundries
+		GameScene scene = entity.getScene();
+		leftLimit = getWidth()/2;
+		bottomLimit = -getHeight() / 2;
+		rightLimit = scene.getWidth() - getWidth()/2;
+		topLimit = -(scene.getHeight() - getHeight())/2;
 	}
+	
 	
 	
 }

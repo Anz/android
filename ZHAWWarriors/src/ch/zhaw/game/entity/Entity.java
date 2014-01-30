@@ -2,19 +2,20 @@ package ch.zhaw.game.entity;
 
 import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
-import org.andengine.extension.physics.box2d.PhysicsFactory;
+import org.andengine.extension.physics.box2d.util.constants.PhysicsConstants;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 
+import ch.zhaw.game.Util;
 import ch.zhaw.game.scene.GameScene;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import static org.andengine.extension.physics.box2d.util.constants.PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT;;
 
-public class Entity implements EntityController {
+public class Entity {
 	public static long FRAME_SPEED[] = { 200l, 200l, 200l, 200l };
 	
 	private GameScene scene;
@@ -23,23 +24,22 @@ public class Entity implements EntityController {
 	private Category category;
 	private float speed;
 	private Vector2 target = null;
-	private EntityController entityListener = new EntityControllerStub();
-
-	public Entity(GameScene scene, Category category, float x, float y, String texture, boolean body, boolean sensor) {
-		this(scene, category, x, y, scene.getResourceManager().getTexture(texture), body, sensor);
-	}
 	
-	public Entity(GameScene scene, Category category, float x, float y, TiledTextureRegion texture, boolean body, boolean sensor) {
+	public Entity(GameScene scene, Category category, float x, float y, TiledTextureRegion texture, boolean dynamic) {
 		this.scene = scene;
 		this.category = category;
 		this.sprite = new Sprite(scene, this, x - texture.getWidth()/2, y - texture.getHeight()/2, texture, scene.getResourceManager().getVboManager());
 		scene.registerTouchArea(sprite);
 		
-		if (body)
-			createBody();
+		BodyDef bodyDef = new BodyDef();
+		bodyDef.type = dynamic ? BodyType.DynamicBody : BodyType.StaticBody;
+		bodyDef.position.x = x / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT;
+		bodyDef.position.y = y / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT;
+		this.body = scene.getPhysicsWorld().createBody(bodyDef);
 		
-		if (sensor)
-			createSensor();
+		this.body.setUserData(this);
+		this.body.setFixedRotation(true);
+		scene.getPhysicsWorld().registerPhysicsConnector(new PhysicsConnector(sprite, this.body, true, true));
 		
 		sprite.setCullingEnabled(true);
 	}
@@ -75,14 +75,6 @@ public class Entity implements EntityController {
 		return speed;
 	}
 	
-	public EntityController getEntityListener() {
-		return entityListener;
-	}
-
-	public void setEntityListener(EntityController entityListener) {
-		this.entityListener = entityListener;
-	}
-	
 	public void move(Vector2 position) {
 		this.target = position;
 	}
@@ -107,62 +99,21 @@ public class Entity implements EntityController {
 			sprite.animate(FRAME_SPEED, 0, 3, true);
 		}
 		
-	    if (!current.equals(target)) {
-	        float speed = 7f;
-	        Vector2 direction = target.cpy().sub(current);
-	        float distanceToTarget = direction.len();
-	        float travelDistance = speed * seconds;
-
-	        // the target is very close, so we set the position to the target directly
-	        if (distanceToTarget <= travelDistance) {
-	            body.setTransform(target, body.getAngle());
-	            target = null;
-	            return;
-	        } else {
-	            direction.nor();
-	            // move a bit in the target direction 
-	            body.setTransform(current.cpy().add(direction.mul(travelDistance)), body.getAngle());
-	            sprite.stopAnimation();
-	        }
-	    }
-	}
-	
-	public void onContact(final Entity entity) {
-		entityListener.onContact(entity);
-	}
-	
-	public void onContactEnd(final Entity entity) {
-		entityListener.onContactEnd(entity);
-	}
-	
-	public void onSensor(final Entity entity) {
-		entityListener.onSensor(entity);
-	}
-	
-	public void onSensorEnd(final Entity entity) {
-		entityListener.onSensorEnd(entity);
+		body.setTransform(Util.move(current, target, getSpeed(), seconds), body.getAngle());
 	}
 	
 	public void destroy() {
 		scene.destroyEntity(this);
 	}
 	
-	private void createBody() {		
-		FixtureDef fixture = new FixtureDef();
-		fixture.filter.groupIndex = (short) -category.ordinal();
-		
-//		body = PhysicsFactory.createCircleBody(scene.getPhysicsWorld(), sprite, BodyType.DynamicBody, fixture);
-		final float[] sceneCenterCoordinates = sprite.getSceneCenterCoordinates();
-		body = PhysicsFactory.createCircleBody(scene.getPhysicsWorld(), sceneCenterCoordinates[0], sceneCenterCoordinates[1], 0.5f * PIXEL_TO_METER_RATIO_DEFAULT, BodyType.DynamicBody, fixture);
-//		body = PhysicsFactory.createBoxBody(scene.getPhysicsWorld(), sceneCenterCoordinates[0], sceneCenterCoordinates[1], PIXEL_TO_METER_RATIO_DEFAULT, PIXEL_TO_METER_RATIO_DEFAULT, BodyType.DynamicBody, fixture);
-	    body.setUserData(this);
-	    body.setFixedRotation(true);
-	    scene.getPhysicsWorld().registerPhysicsConnector(new PhysicsConnector(sprite, body, true, false));
+	public void createFixture(FixtureDef fixtureDef) {
+		Fixture fixture = body.createFixture(fixtureDef);
+		fixture.setUserData(new EntityController(this));
 	}
 	
-	private void createSensor() {
-		CircleShape circleShape = new CircleShape();
-	    circleShape.setRadius(10);
-	    body.createFixture(circleShape, 0).setSensor(true);
+	public void setEntityController(EntityController entityController) {
+		for (Fixture fixture : body.getFixtureList()) {
+			fixture.setUserData(entityController);
+		}
 	}
 }
