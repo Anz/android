@@ -5,9 +5,8 @@ import java.util.List;
 import org.andengine.engine.camera.Camera;
 import org.andengine.entity.Entity;
 import org.andengine.entity.sprite.Sprite;
-import org.andengine.opengl.texture.region.TextureRegion;
-import org.andengine.opengl.texture.region.TextureRegionFactory;
-import org.andengine.opengl.texture.region.TiledTextureRegion;
+import org.andengine.opengl.texture.ITexture;
+import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.texture.render.RenderTexture;
 import org.andengine.opengl.util.GLState;
 import org.andengine.util.color.Color;
@@ -19,7 +18,7 @@ public class TextureEntity extends Entity {
 	private RenderTexture renderTexture;
 	private boolean update = false;
 	
-	public TextureEntity(GameScene scene, int width, int height, List<TextureRegion> textures) {
+	public TextureEntity(GameScene scene, int width, int height, List<ITextureRegion> textures) {
 		this.scene = scene;
 		renderTexture = new RenderTexture(scene.getResourceManager().getTextureManager(), 512, 512);
 		
@@ -42,14 +41,14 @@ public class TextureEntity extends Entity {
 	    
 	    update = false;
 	}
-
-	public TiledTextureRegion getTiledTextureRegion(int frameX, int frameY) {
-		return TextureRegionFactory.extractTiledFromTexture(renderTexture, frameX, frameY);
+	
+	public ITexture getTexture() {
+		return renderTexture;
 	}
 	
-	public void update(List<TextureRegion> textures) {
+	public void update(List<ITextureRegion> textures) {
 		detachChildren();
-		for (TextureRegion texture : textures) {
+		for (ITextureRegion texture : textures) {
 			attachChild(new Sprite(0, 0, texture, scene.getResourceManager().getVboManager()));
 		}
 		update = true;

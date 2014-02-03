@@ -11,7 +11,8 @@ import org.andengine.entity.scene.Scene;
 import org.andengine.extension.physics.box2d.FixedStepPhysicsWorld;
 import org.andengine.extension.physics.box2d.PhysicsFactory;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
-import org.andengine.opengl.texture.region.TextureRegion;
+import org.andengine.opengl.texture.region.ITextureRegion;
+import org.andengine.opengl.texture.region.TextureRegionFactory;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.opengl.util.GLState;
 import org.andengine.util.color.Color;
@@ -33,10 +34,12 @@ public class GameScene extends Scene  /*ContactListener,*/ {
 	private List<Entity> entities = new LinkedList<Entity>();
 	private Set<Entity> removable = new HashSet<Entity>();
 	private TouchListener touchListener = null;
-	private float width;
-	private float height;
+	private float left;
+	private float right;
+	private float bottom;
+	private float top;
 	
-	public GameScene(ResourceManager resourceManager, float width, float height) {
+	public GameScene(ResourceManager resourceManager, float left, float right, float bottom, float top) {
 		this.resourceManager = resourceManager;
 		
 		physicsWorld = new FixedStepPhysicsWorld(60, new Vector2(0, 0), true);
@@ -46,7 +49,7 @@ public class GameScene extends Scene  /*ContactListener,*/ {
 		physicsWorld.setContactListener(new CollsisionHandler());
 		
 		// create map
-		createMap(width, height);
+		createMap(left, right, bottom, top);
 	}
 
 	public PhysicsWorld getPhysicsWorld() {
@@ -57,31 +60,26 @@ public class GameScene extends Scene  /*ContactListener,*/ {
 		return resourceManager;
 	}
 	
-	private void createMap(float width, float height) {
-		this.width = width;
-		this.height = height;
+	private void createMap(float left, float right, float bottom, float top) {
+		this.left = left;
+		this.right = right;
+		this.bottom = bottom;
+		this.top = top;
+		
+		float width = right - left;
+		float height = top - bottom;
 		
 		final float THICKNESS = 100;
 		FixtureDef fixture = PhysicsFactory.createFixtureDef(0, 0.01f, 0.5f);
-//		PhysicsFactory.createBoxBody(physicsWorld, width/2, height/2+THICKNESS/2, width, THICKNESS, 0, BodyType.StaticBody, fixture);
-//		PhysicsFactory.createBoxBody(physicsWorld, width/2, -height/2-THICKNESS/2, width, THICKNESS, 0, BodyType.StaticBody, fixture);
-//		PhysicsFactory.createBoxBody(physicsWorld, -THICKNESS/2, 0, THICKNESS, height, 0, BodyType.StaticBody, fixture);
-//		PhysicsFactory.createBoxBody(physicsWorld, width+THICKNESS/2, 0, THICKNESS, height, 0, BodyType.StaticBody, fixture);
+//		PhysicsFactory.createBoxBody(physicsWorld, width/2, height+THICKNESS/2, width, THICKNESS, 0, BodyType.StaticBody, fixture);
+//		PhysicsFactory.createBoxBody(physicsWorld, width/2, -THICKNESS/2, width, THICKNESS, 0, BodyType.StaticBody, fixture);
+//		PhysicsFactory.createBoxBody(physicsWorld, -THICKNESS/2, height/2, THICKNESS, height, 0, BodyType.StaticBody, fixture);
+//		PhysicsFactory.createBoxBody(physicsWorld, width+THICKNESS/2, height/2, THICKNESS, height, 0, BodyType.StaticBody, fixture);
 		
-		PhysicsFactory.createBoxBody(physicsWorld, width/2, height+THICKNESS/2, width, THICKNESS, 0, BodyType.StaticBody, fixture);
-		PhysicsFactory.createBoxBody(physicsWorld, width/2, -THICKNESS/2, width, THICKNESS, 0, BodyType.StaticBody, fixture);
-		PhysicsFactory.createBoxBody(physicsWorld, -THICKNESS/2, height/2, THICKNESS, height, 0, BodyType.StaticBody, fixture);
-		PhysicsFactory.createBoxBody(physicsWorld, width+THICKNESS/2, height/2, THICKNESS, height, 0, BodyType.StaticBody, fixture);
-		
-//		createRectangle(width/2, height+THICKNESS/2, width, THICKNESS);
-//		createRectangle(width/2, -THICKNESS/2, width, THICKNESS);
-//		createRectangle(-THICKNESS/2, height/2, THICKNESS, height);
-//		createRectangle(width+THICKNESS/2, height/2, THICKNESS, height);
-		
-//		createRectangle(width/2, height/2+THICKNESS/2, width, THICKNESS);
-//		createRectangle(width/2, -height/2-THICKNESS/2, width, THICKNESS);
-//		createRectangle(THICKNESS/2, 0f, THICKNESS, height);
-//		createRectangle(width+THICKNESS/2, 0f, THICKNESS, height);
+		PhysicsFactory.createBoxBody(physicsWorld, left+width/2, top+THICKNESS/2, width, THICKNESS, 0, BodyType.StaticBody, fixture);
+		PhysicsFactory.createBoxBody(physicsWorld, left+width/2, bottom-THICKNESS/2, width, THICKNESS, 0, BodyType.StaticBody, fixture);
+		PhysicsFactory.createBoxBody(physicsWorld, left-THICKNESS/2, bottom+height/2, THICKNESS, height, 0, BodyType.StaticBody, fixture);
+		PhysicsFactory.createBoxBody(physicsWorld, right+THICKNESS/2, bottom+height/2, THICKNESS, height, 0, BodyType.StaticBody, fixture);
 	}
 	
 	public void createRectangle(float x, float y, float width, float height) {
@@ -92,18 +90,20 @@ public class GameScene extends Scene  /*ContactListener,*/ {
 	}
 	
 	public Entity createEntity(Category category, float x, float y, String texture, boolean dynamic) {
-		return createEntity(category, x, y, resourceManager.getTexture(texture), dynamic);
+		return createEntity(category, x, y, TextureRegionFactory.extractTiledFromTexture(resourceManager.getTexture(texture), 1, 1), dynamic);
 	}
 	
 	public Entity createEntity(Category category, float x, float y, TiledTextureRegion texture, boolean dynamic) {
 		Entity entity = new Entity(this, category, x, y, texture, dynamic);
-		entity.createFixture(GameSceneFactory.createCircularFixture(category));
+		if (dynamic) {
+			entity.createFixture(GameSceneFactory.createCircularFixture(category));
+		}
 		entities.add(entity);
 		attachChild(entity.getSprite());
 		return entity;
 	}
 	
-	public TextureEntity createTextureEntity(int width, int height, List<TextureRegion> textures) {
+	public TextureEntity createTextureEntity(int width, int height, List<ITextureRegion> textures) {
 		return new TextureEntity(this, width, height, textures);
 	}
 	
@@ -160,21 +160,45 @@ public class GameScene extends Scene  /*ContactListener,*/ {
 		this.touchListener = touchListener;
 	}
 
-	public float getWidth() {
-		return width;
+	public float getLeft() {
+		return left;
 	}
 
-	public float getHeight() {
-		return height;
+	public void setLeft(float left) {
+		this.left = left;
+	}
+
+	public float getRight() {
+		return right;
+	}
+
+	public void setRight(float right) {
+		this.right = right;
+	}
+
+	public float getBottom() {
+		return bottom;
+	}
+
+	public void setBottom(float bottom) {
+		this.bottom = bottom;
+	}
+
+	public float getTop() {
+		return top;
+	}
+
+	public void setTop(float top) {
+		this.top = top;
 	}
 
 	public List<Entity> getEntities() {
 		return entities;
 	}
 	
-	public Entity getPlayer() {
+	public Entity getEntityById(String id) {
 		for (Entity entity : entities) {
-			if (entity.getEntityType() == Category.PLAYER) {
+			if (id.equals(entity.getId())) {
 				return entity;
 			}
 		}

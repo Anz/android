@@ -2,13 +2,13 @@ package ch.zhaw.game.activity;
 
 import org.andengine.entity.scene.Scene;
 
+import android.util.Log;
+
+import ch.zhaw.game.physics.CollisionDebugger;
 import ch.zhaw.game.scene.GameScene;
 import ch.zhaw.game.scene.GameSceneFactory;
 
-
 public class GameActivity extends AbstractBaseActivity {
-	public static final String KEY_MAP = "map";
-
 	@Override
 	protected Scene onCreateScene() {
 		try {
@@ -19,13 +19,13 @@ public class GameActivity extends AbstractBaseActivity {
 			GameScene scene = GameSceneFactory.loadScene(resourceManager, map);
 			
 			// camera should case player
-			camera.chase(scene.getPlayer());
+			camera.chase(scene.getEntityById("player"));
 			
+			scene.registerUpdateHandler(new CollisionDebugger(scene));
 			return scene;
 		} catch (Exception e) {
 			// something failed, report and exit
-			e.printStackTrace();
-			System.exit(1);
+			Log.e("menu", "could not load map", e);
 			return null;
 		}
 	}

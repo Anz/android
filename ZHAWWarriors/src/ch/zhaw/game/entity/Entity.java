@@ -24,11 +24,13 @@ public class Entity {
 	private Category category;
 	private float speed;
 	private Vector2 target = null;
+	private EntityController entityController;
+	private String id;
 	
 	public Entity(GameScene scene, Category category, float x, float y, TiledTextureRegion texture, boolean dynamic) {
 		this.scene = scene;
 		this.category = category;
-		this.sprite = new Sprite(scene, this, x - texture.getWidth()/2, y - texture.getHeight()/2, texture, scene.getResourceManager().getVboManager());
+		this.sprite = new Sprite(scene, this, x - texture.getWidth()/2, y - texture.getHeight()/2, texture);
 		scene.registerTouchArea(sprite);
 		
 		BodyDef bodyDef = new BodyDef();
@@ -52,8 +54,6 @@ public class Entity {
 	public AnimatedSprite getSprite() {
 		return sprite;
 	}
-	
-	
 
 	public void setSprite(Sprite sprite) {
 		this.sprite = sprite;
@@ -77,6 +77,12 @@ public class Entity {
 	
 	public void move(Vector2 position) {
 		this.target = position;
+	}
+	
+	public void onTouch() {
+		if (entityController != null) {
+			entityController.onTouch();
+		}
 	}
 
 	public void onUpdate(final float seconds) {
@@ -112,8 +118,19 @@ public class Entity {
 	}
 	
 	public void setEntityController(EntityController entityController) {
+		this.entityController = entityController;
 		for (Fixture fixture : body.getFixtureList()) {
 			fixture.setUserData(entityController);
 		}
+	}
+
+
+	public String getId() {
+		return id;
+	}
+
+
+	public void setId(String id) {
+		this.id = id;
 	}
 }

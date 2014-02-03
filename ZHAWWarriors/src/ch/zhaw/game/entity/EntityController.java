@@ -8,6 +8,8 @@ public class EntityController {
 		this.entity = entity;
 	}
 	
+	public void onTouch() {}
+	
 	public void onContact(EntityController entity) {}
 	
 	public void onContactEnd(EntityController entity) {}

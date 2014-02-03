@@ -5,13 +5,15 @@ import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.FillResolutionPolicy;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 
-import ch.zhaw.game.control.CameraController;
+import ch.zhaw.game.entity.GameCamera;
 import ch.zhaw.game.resource.ResourceManager;
 
 
 public abstract class AbstractBaseActivity extends SimpleBaseGameActivity {
+	public static final String KEY_MAP = "map";
+	
 	// camera
-	protected CameraController camera;
+	protected GameCamera camera;
 	
 	// resource manager
 	protected ResourceManager resourceManager;
@@ -19,7 +21,7 @@ public abstract class AbstractBaseActivity extends SimpleBaseGameActivity {
 	@Override
 	public EngineOptions onCreateEngineOptions() {
 		// initialize camera resolution based on display resolution
-		camera = new CameraController(getWindowManager().getDefaultDisplay());
+		camera = new GameCamera(getWindowManager().getDefaultDisplay());
 		
 		// set engine options
 		EngineOptions engineOptions = new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, new FillResolutionPolicy(), camera);

@@ -1,5 +1,7 @@
 package ch.zhaw.game.control;
 
+import java.util.Map;
+
 import org.andengine.engine.handler.IUpdateHandler;
 
 import ch.zhaw.game.Util;
@@ -10,7 +12,7 @@ import ch.zhaw.game.entity.EntityController;
 public class EnemyController extends EntityController implements IUpdateHandler {
 	private Entity target;
 	
-	public EnemyController(Entity entity, Entity target) {
+	public EnemyController(Entity entity, Map<String, Object> args) {
 		super(entity);
 		entity.getSprite().registerUpdateHandler(this);
 	}

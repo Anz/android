@@ -2,16 +2,20 @@ package ch.zhaw.game.control;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
+import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.util.constants.PhysicsConstants;
 import org.andengine.input.touch.TouchEvent;
-import org.andengine.opengl.texture.region.TextureRegion;
+import org.andengine.opengl.texture.region.ITextureRegion;
+import org.andengine.opengl.texture.region.TextureRegionFactory;
 
 import ch.zhaw.game.entity.Category;
 import ch.zhaw.game.entity.Entity;
 import ch.zhaw.game.entity.EntityController;
+import ch.zhaw.game.entity.Sprite;
 import ch.zhaw.game.resource.ResourceManager;
 import ch.zhaw.game.resource.TextureEntity;
 import ch.zhaw.game.scene.GameScene;
@@ -22,9 +26,22 @@ public class PlayerController extends EntityController implements IOnSceneTouchL
 	private Entity targetEntity;
 	private TextureEntity textureEntity;
 	
-	public PlayerController(Entity entity, TextureEntity textureEntity) {
+	public PlayerController(Entity entity, Map<String, Object> args) {
 		super(entity);
-		this.textureEntity = textureEntity;
+		
+		GameScene scene = entity.getScene();
+		
+		// create player
+		List<ITextureRegion> textureList = new ArrayList<ITextureRegion>();
+		textureList.add(TextureRegionFactory.extractFromTexture(scene.getResourceManager().getTexture("knight.png")));
+		textureEntity = scene.createTextureEntity(512, 512, textureList);
+		scene.detachChild(entity.getSprite());
+		entity.setSprite(new Sprite(scene, entity, entity.getSprite().getX(), entity.getSprite().getY(), TextureRegionFactory.extractTiledFromTexture(textureEntity.getTexture(), 4, 3)));
+		scene.attachChild(entity.getSprite());
+		scene.getPhysicsWorld().registerPhysicsConnector(new PhysicsConnector(entity.getSprite(), entity.getBody(), true, true));
+
+		entity.setEntityController(this);
+		scene.setOnSceneTouchListener(this);
 	}
 	
 	@Override
@@ -43,9 +60,9 @@ public class PlayerController extends EntityController implements IOnSceneTouchL
 			final GameScene scene =  this.entity.getScene();
 			final ResourceManager resourceManager = scene.getResourceManager();
 			
-			List<TextureRegion> textureList = new ArrayList<TextureRegion>();
-			textureList.add(new TextureRegion(resourceManager.getTexture("knight.png").getTexture(), 0f, 0f, 512f, 512f));
-			textureList.add(new TextureRegion(resourceManager.getTexture("witch_hat.png").getTexture(), 0f, 0f, 512f, 512f));
+			List<ITextureRegion> textureList = new ArrayList<ITextureRegion>();
+			textureList.add(TextureRegionFactory.extractFromTexture(resourceManager.getTexture("knight.png")));
+			textureList.add(TextureRegionFactory.extractFromTexture(resourceManager.getTexture("witch_hat.png")));
 			textureEntity.update(textureList);
 		}
 	}

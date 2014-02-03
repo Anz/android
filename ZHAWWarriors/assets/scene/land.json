@@ -1,23 +1,34 @@
-[
-	[
-		{ class: "land" },
-		{ class: "player", x: -100 },
-		{ class: "witch_hat"  },
-		{ class: "box", x: 100  }
-	],
-	
-	[
-		{ class: "land" },
-		{ class: "witch_hat", x: -200, y: 0 },
-		{ class: "witch" }
-	],
-	[
-		{ class: "land" }
-	],
-	[
-		{ class: "land" },
-		{ class: "witch" },
-		{ class: "witch", y: -200 }
+{
+	classes: {
+		player: { category: player, dynamic: true, img: 'knight.png', handler: 'player', speed: 10, xFrames: 4, yFrames: 3 },
+		witch: { category: enemy, dynamic: true, img: 'witch2.png', handler: 'enemy', speed: 3, xFrames: 4, yFrames: 3 },
+		land: { category: static, img: 'background.png' },
+		box: { category: static, dynamic: true, img: 'box_ani.png', xFrames: 4 },
+		witch_hat: { category: item, dynamic: true, img: 'witch_hat.png', xFrames: 4, y: 200 }
+	},
+	tiles: [
+		[
+			{ class: "land" },
+			{ class: "player", id: "player", x: -100 },
+			{ class: "witch_hat"  },
+			{ class: "box", x: 100  }
+		],
+		[
+			{ class: "land" },
+			{ class: "witch_hat", x: -200 },
+			{ class: "witch" }
+		],
+		[
+			{ class: "land" }
+		],
+		[
+			{ class: "land" },
+			{ class: "witch" },
+			{ class: "witch", y: -200 }
+		],
+		[
+			{ class: "land" },
+			{ class: "box", handler: trigger, event: contact, load: '' }
+		]
 	]
-
-]
+}
