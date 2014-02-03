@@ -1,11 +1,11 @@
 {
 	classes: {
-		menu: { handler: 'trigger', event: touch, load: 'scene/land.json', img: 'start.png' }
+		menu: { handler: trigger, event: touch }
 	},
 	tiles: [
 		[
-			{ class: "menu", load: 'scene/land.json', y: -100 },
-			{ class: "menu" }
+			{ class: menu, img: 'start.png', load: 'scene/land.json', y: -100 },
+			{ class: menu, img: 'start.png' }
 		]
 	]
 }

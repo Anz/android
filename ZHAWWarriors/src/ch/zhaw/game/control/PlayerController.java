@@ -12,7 +12,6 @@ import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.texture.region.TextureRegionFactory;
 
-import ch.zhaw.game.entity.Category;
 import ch.zhaw.game.entity.Entity;
 import ch.zhaw.game.entity.EntityController;
 import ch.zhaw.game.entity.Sprite;
@@ -48,12 +47,12 @@ public class PlayerController extends EntityController implements IOnSceneTouchL
 	public void onContact(EntityController entityController) {
 		Entity entity = entityController.getEntity();
 		
-		if (entity.getEntityType() == Category.ENEMY && targetEntity == entity) {
+		if (this.entity.isEnemy(entity) && targetEntity == entity) {
 			this.entity.move(null);
 			this.entity.getSprite().animate(Entity.FRAME_SPEED, 4, 7, true);
 		}
 		
-		if (entity.getEntityType() == Category.ITEM) {
+		if (entity.isPickable()) {
 			entity.destroy();
 
 			

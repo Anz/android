@@ -11,9 +11,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import ch.zhaw.game.control.EnemyController;
-import ch.zhaw.game.control.TriggerController;
 import ch.zhaw.game.control.PlayerController;
-import ch.zhaw.game.entity.Category;
+import ch.zhaw.game.control.TriggerController;
 import ch.zhaw.game.entity.Entity;
 import ch.zhaw.game.entity.EntityController;
 import ch.zhaw.game.resource.ResourceManager;
@@ -22,6 +21,9 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 
 public class GameSceneFactory {
+	private static int seq = 0;
+	private static Map<String, Integer> partyGroupMap = new HashMap<String, Integer>();
+	
 	private static final Map<String, Class<? extends EntityController>> ENTITY_CONROLLERS = new HashMap<String, Class<? extends EntityController>>() {
 		private static final long serialVersionUID = 1L;
 		{
@@ -36,6 +38,7 @@ public class GameSceneFactory {
 		{
 			put("id", "");
 			put("handler", "");
+			put("party", "");
 			put("category", "static");
 			put("x", 0);
 			put("y", 0);
@@ -43,6 +46,7 @@ public class GameSceneFactory {
 			put("yFrames", 1);
 			put("img", "knight.png");
 			put("speed", 0);
+			put("pickable", false);
 			put("dynamic", false);
 			
 			// trigger
@@ -100,21 +104,13 @@ public class GameSceneFactory {
 					int xFrames = (Integer)properties.get("xFrames");
 				    int yFrames = (Integer)properties.get("yFrames");
 				    boolean dynamic = (Boolean)properties.get("dynamic");
-					Category category = Category.STATIC;
-					if ("static".equals(properties.get("category"))) {
-						category = Category.STATIC;
-					} else if ("player".equals(properties.get("category"))) {
-						category = Category.PLAYER;
-					} else if ("item".equals(properties.get("category"))) {
-						category = Category.ITEM;
-					} else if ("enemy".equals(properties.get("category"))) {
-						category = Category.ENEMY;
-					}
 					
 					TiledTextureRegion texture = TextureRegionFactory.extractTiledFromTexture(resourceManager.getTexture(image), xFrames, yFrames);
 					
-					Entity result = scene.createEntity(category, x, y, texture, dynamic);
+					Entity result = scene.createEntity((String)properties.get("party"), x, y, texture, dynamic);
 					result.setId((String)properties.get("id"));
+					result.setParty((String)properties.get("party"));
+					result.setPickable((Boolean)properties.get("pickable"));
 					
 					Class<? extends EntityController> entityControllerClass = ENTITY_CONROLLERS.get((String)properties.get("handler"));
 					if (entityControllerClass != null) {
@@ -149,12 +145,18 @@ public class GameSceneFactory {
 		return properties;
 	}
 
-	public static FixtureDef createCircularFixture(Category category) {
+	public static FixtureDef createCircularFixture(String party) {
+		if (!partyGroupMap.containsKey(party)) {
+			partyGroupMap.put(party, seq++);
+		}
+		
+		Integer index = partyGroupMap.get(party);
+		
 		CircleShape shape = new CircleShape();
 		shape.setRadius(0.5f);
 		
 		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.filter.groupIndex = (short) -category.ordinal();
+		fixtureDef.filter.groupIndex = (short) -index;
 		fixtureDef.shape = shape;
 		return fixtureDef;
 	}

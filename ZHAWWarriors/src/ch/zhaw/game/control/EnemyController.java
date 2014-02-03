@@ -5,7 +5,6 @@ import java.util.Map;
 import org.andengine.engine.handler.IUpdateHandler;
 
 import ch.zhaw.game.Util;
-import ch.zhaw.game.entity.Category;
 import ch.zhaw.game.entity.Entity;
 import ch.zhaw.game.entity.EntityController;
 
@@ -22,7 +21,7 @@ public class EnemyController extends EntityController implements IUpdateHandler 
 	public void onContact(EntityController entityController) {
 		Entity entity = entityController.getEntity();
 		
-		if (entity.getEntityType() != Category.PLAYER) {
+		if (!this.entity.isEnemy(entity)) {
 			return;
 		}
 		
@@ -35,7 +34,7 @@ public class EnemyController extends EntityController implements IUpdateHandler 
 	public void onContactEnd(EntityController entityController) {
 		Entity entity = entityController.getEntity();
 		
-		if (entity.getEntityType() != Category.PLAYER) {
+		if (!this.entity.isEnemy(entity)) {
 			return;
 		}
 		

@@ -12,12 +12,10 @@ import org.andengine.extension.physics.box2d.FixedStepPhysicsWorld;
 import org.andengine.extension.physics.box2d.PhysicsFactory;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
 import org.andengine.opengl.texture.region.ITextureRegion;
-import org.andengine.opengl.texture.region.TextureRegionFactory;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.opengl.util.GLState;
 import org.andengine.util.color.Color;
 
-import ch.zhaw.game.entity.Category;
 import ch.zhaw.game.entity.Entity;
 import ch.zhaw.game.entity.TouchListener;
 import ch.zhaw.game.physics.CollsisionHandler;
@@ -71,10 +69,6 @@ public class GameScene extends Scene  /*ContactListener,*/ {
 		
 		final float THICKNESS = 100;
 		FixtureDef fixture = PhysicsFactory.createFixtureDef(0, 0.01f, 0.5f);
-//		PhysicsFactory.createBoxBody(physicsWorld, width/2, height+THICKNESS/2, width, THICKNESS, 0, BodyType.StaticBody, fixture);
-//		PhysicsFactory.createBoxBody(physicsWorld, width/2, -THICKNESS/2, width, THICKNESS, 0, BodyType.StaticBody, fixture);
-//		PhysicsFactory.createBoxBody(physicsWorld, -THICKNESS/2, height/2, THICKNESS, height, 0, BodyType.StaticBody, fixture);
-//		PhysicsFactory.createBoxBody(physicsWorld, width+THICKNESS/2, height/2, THICKNESS, height, 0, BodyType.StaticBody, fixture);
 		
 		PhysicsFactory.createBoxBody(physicsWorld, left+width/2, top+THICKNESS/2, width, THICKNESS, 0, BodyType.StaticBody, fixture);
 		PhysicsFactory.createBoxBody(physicsWorld, left+width/2, bottom-THICKNESS/2, width, THICKNESS, 0, BodyType.StaticBody, fixture);
@@ -89,14 +83,10 @@ public class GameScene extends Scene  /*ContactListener,*/ {
 		attachChild(rect);
 	}
 	
-	public Entity createEntity(Category category, float x, float y, String texture, boolean dynamic) {
-		return createEntity(category, x, y, TextureRegionFactory.extractTiledFromTexture(resourceManager.getTexture(texture), 1, 1), dynamic);
-	}
-	
-	public Entity createEntity(Category category, float x, float y, TiledTextureRegion texture, boolean dynamic) {
-		Entity entity = new Entity(this, category, x, y, texture, dynamic);
+	public Entity createEntity(String party, float x, float y, TiledTextureRegion texture, boolean dynamic) {
+		Entity entity = new Entity(this, x, y, texture, dynamic);
 		if (dynamic) {
-			entity.createFixture(GameSceneFactory.createCircularFixture(category));
+			entity.createFixture(GameSceneFactory.createCircularFixture(party));
 		}
 		entities.add(entity);
 		attachChild(entity.getSprite());
@@ -141,7 +131,7 @@ public class GameScene extends Scene  /*ContactListener,*/ {
 		for (Entity entity : entities) {
 			int zindex = -1000000;
 			
-			if (entity.getEntityType() != Category.STATIC) {
+			if (entity.isDynamic()) {
 				zindex = Math.round(entity.getBody().getPosition().y * 1000);
 			}
 			entity.getSprite().setZIndex(zindex);

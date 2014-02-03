@@ -1,10 +1,10 @@
 {
 	classes: {
-		player: { category: player, dynamic: true, img: 'knight.png', handler: 'player', speed: 10, xFrames: 4, yFrames: 3 },
-		witch: { category: enemy, dynamic: true, img: 'witch2.png', handler: 'enemy', speed: 3, xFrames: 4, yFrames: 3 },
-		land: { category: static, img: 'background.png' },
-		box: { category: static, dynamic: true, img: 'box_ani.png', xFrames: 4 },
-		witch_hat: { category: item, dynamic: true, img: 'witch_hat.png', xFrames: 4, y: 200 }
+		player: { party: good, dynamic: true, img: 'knight.png', handler: 'player', speed: 10, xFrames: 4, yFrames: 3 },
+		witch: { party: badass, dynamic: true, img: 'witch2.png', handler: 'enemy', speed: 3, xFrames: 4, yFrames: 3 },
+		land: { img: 'background.png' },
+		box: { dynamic: true, img: 'box_ani.png', xFrames: 4 },
+		witch_hat: { pickable: true, dynamic: true, img: 'witch_hat.png', xFrames: 4, y: 200 }
 	},
 	tiles: [
 		[

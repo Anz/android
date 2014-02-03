@@ -21,16 +21,18 @@ public class Entity {
 	private GameScene scene;
 	private Sprite sprite;
 	private Body body;
-	private Category category;
+	private String party;
+	private boolean pickable;
+	private boolean dynamic;
 	private float speed;
 	private Vector2 target = null;
 	private EntityController entityController;
 	private String id;
 	
-	public Entity(GameScene scene, Category category, float x, float y, TiledTextureRegion texture, boolean dynamic) {
+	public Entity(GameScene scene, float x, float y, TiledTextureRegion texture, boolean dynamic) {
 		this.scene = scene;
-		this.category = category;
 		this.sprite = new Sprite(scene, this, x - texture.getWidth()/2, y - texture.getHeight()/2, texture);
+		this.dynamic = dynamic;
 		scene.registerTouchArea(sprite);
 		
 		BodyDef bodyDef = new BodyDef();
@@ -61,10 +63,6 @@ public class Entity {
 
 	public Body getBody() {
 		return body;
-	}
-	
-	public Category getEntityType() {
-		return category;
 	}
 	
 	public void setSpeed(float speed) {
@@ -132,5 +130,42 @@ public class Entity {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+
+	public String getParty() {
+		return party;
+	}
+
+
+	public void setParty(String party) {
+		this.party = party;
+	}
+	
+	public boolean isEnemy(Entity entity) {
+		if ("".equals(party) || "".equals(entity.getParty())) {
+			return false;
+		}
+		
+		return !party.equals(entity.getParty());
+	}
+
+
+	public boolean isPickable() {
+		return pickable;
+	}
+
+
+	public void setPickable(boolean pickupable) {
+		this.pickable = pickupable;
+	}
+
+
+	public boolean isDynamic() {
+		return dynamic;
+	}
+
+	public void setDynamic(boolean dynamic) {
+		this.dynamic = dynamic;
 	}
 }
