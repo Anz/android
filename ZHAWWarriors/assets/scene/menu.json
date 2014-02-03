@@ -4,8 +4,9 @@
 	},
 	tiles: [
 		[
-			{ class: menu, img: 'start.png', load: 'scene/land.json', y: -100 },
-			{ class: menu, img: 'start.png' }
+			{ img: 'title.svg', y:  -300 },
+			{ class: menu, img: 'start.svg', load: 'scene/land.json', y: -150 },
+			{ class: menu, img: 'options.svg', load: 'scene/options.json' }
 		]
 	]
 }

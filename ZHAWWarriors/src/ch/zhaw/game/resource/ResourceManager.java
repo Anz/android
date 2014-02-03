@@ -1,22 +1,30 @@
 package ch.zhaw.game.resource;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
+
+import org.andengine.extension.svg.opengl.texture.atlas.bitmap.SVGBitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.texture.Texture;
 import org.andengine.opengl.texture.TextureManager;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
-import org.andengine.opengl.texture.region.TextureRegionFactory;
-import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
 import android.app.Activity;
 import android.content.res.AssetManager;
-import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
+import android.util.Log;
 
 public class ResourceManager {	
 	private Map<String, Texture> imgs = new HashMap<String, Texture>();
@@ -31,25 +39,6 @@ public class ResourceManager {
 	}
 	
 	public Texture getTexture(String name) {
-		if (!imgs.containsKey(name)) {
-			try {
-				Drawable drawable = Drawable.createFromStream(context.getResources().getAssets().open("gfx/" + name), null);
-				int height = drawable.getIntrinsicHeight() * 2;
-				int width =  drawable.getIntrinsicWidth() * 2;
-				
-				BitmapTextureAtlas texture = new BitmapTextureAtlas(context.getTextureManager(), width, height, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-				BitmapTextureAtlasTextureRegionFactory.createFromAsset(texture, context, name, 0, 0);
-				texture.load();
-				imgs.put(name, texture);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		
-		return imgs.get(name);
-	}
-
-//	public TiledTextureRegion loadTexture(String name, int xFrames, int yFrames) {
 //		if (!imgs.containsKey(name)) {
 //			try {
 //				Drawable drawable = Drawable.createFromStream(context.getResources().getAssets().open("gfx/" + name), null);
@@ -57,23 +46,43 @@ public class ResourceManager {
 //				int width =  drawable.getIntrinsicWidth() * 2;
 //				
 //				BitmapTextureAtlas texture = new BitmapTextureAtlas(context.getTextureManager(), width, height, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-//				TiledTextureRegion textureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(texture, context, name, 0, 0, xFrames, yFrames);
+//				BitmapTextureAtlasTextureRegionFactory.createFromAsset(texture, context, name, 0, 0);
 //				texture.load();
-//				imgs.put(name, textureRegion);
+//				imgs.put(name, texture);
 //			} catch (Exception e) {
-//				e.printStackTrace();
+//				Log.e("resource", "could not load texture", e);
 //			}
 //		}
 //		
 //		return imgs.get(name);
-//	}
-	
-	public TiledTextureRegion getTextureRegion(Texture texture, int xFrames, int yFrames) {
-		return TextureRegionFactory.extractTiledFromTexture(texture, xFrames, yFrames);
+		return getTexture2(name);
 	}
 	
-	public TiledTextureRegion getTextureRegion(String name, int xFrames, int yFrames) {
-		return getTextureRegion(getTexture(name), xFrames, yFrames);
+	public Texture getTexture2(String name) {
+		if (!imgs.containsKey(name)) {
+			try {
+				String fileName = "gfx/" + name;
+				InputStream file = context.getResources().getAssets().open(fileName);
+		        
+		        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+		        Document doc = builder.parse(file);
+		        XPath xpath = XPathFactory.newInstance().newXPath();
+		        
+		        int width = ((Number)xpath.evaluate("//svg/@width", doc, XPathConstants.NUMBER)).intValue();
+		        int height = ((Number)xpath.evaluate("//svg/@height", doc, XPathConstants.NUMBER)).intValue();
+		        Log.i("###width", "load " + name + ": " + width + " " + height);
+				
+				BitmapTextureAtlas texture = new BitmapTextureAtlas(context.getTextureManager(), width, height, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+				
+				SVGBitmapTextureAtlasTextureRegionFactory.createFromAsset(texture, context, fileName, width, height, null, 0, 0);
+				texture.load();
+				imgs.put(name, texture);
+			} catch (Exception e) {
+				Log.e("resource", "could not load texture", e);
+			}
+		}
+		
+		return imgs.get(name);
 	}
 	
 	public Activity getActivity() {

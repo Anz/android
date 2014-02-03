@@ -18,6 +18,9 @@ public class Sprite extends AnimatedSprite {
 
 	@Override
 	public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+		if (!pSceneTouchEvent.isActionDown()) {
+			return false;
+		}
 		entity.onTouch();
 		scene.onSceneTouchEvent(entity);
 		return super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);

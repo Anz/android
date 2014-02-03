@@ -32,7 +32,7 @@ public class PlayerController extends EntityController implements IOnSceneTouchL
 		
 		// create player
 		List<ITextureRegion> textureList = new ArrayList<ITextureRegion>();
-		textureList.add(TextureRegionFactory.extractFromTexture(scene.getResourceManager().getTexture("knight.png")));
+		textureList.add(TextureRegionFactory.extractFromTexture(scene.getResourceManager().getTexture((String)args.get("img"))));
 		textureEntity = scene.createTextureEntity(512, 512, textureList);
 		scene.detachChild(entity.getSprite());
 		entity.setSprite(new Sprite(scene, entity, entity.getSprite().getX(), entity.getSprite().getY(), TextureRegionFactory.extractTiledFromTexture(textureEntity.getTexture(), 4, 3)));
@@ -60,8 +60,8 @@ public class PlayerController extends EntityController implements IOnSceneTouchL
 			final ResourceManager resourceManager = scene.getResourceManager();
 			
 			List<ITextureRegion> textureList = new ArrayList<ITextureRegion>();
-			textureList.add(TextureRegionFactory.extractFromTexture(resourceManager.getTexture("knight.png")));
-			textureList.add(TextureRegionFactory.extractFromTexture(resourceManager.getTexture("witch_hat.png")));
+			textureList.add(TextureRegionFactory.extractFromTexture(resourceManager.getTexture("knight.svg")));
+			textureList.add(TextureRegionFactory.extractFromTexture(resourceManager.getTexture("witch_hat.svg")));
 			textureEntity.update(textureList);
 		}
 	}

@@ -1,9 +1,22 @@
 {
 	classes: {
+		menu: { handler: trigger, event: touch },
+		button: { handler: button, event: touch }
 	},
 	tiles: [
 		[
-			{ class: "menu" }
+			{ img: 'title.svg', y:  -300 },
+			{ class: menu, img: 'back.svg', load: '', x: -600, y: -280 },
+			{ img: 'options.svg', y: -200 },
+			
+			{ img: 'sound.svg', x: -200 },
+			{ class: button, img: 'on.svg', img2: 'off.svg', x: 200 },
+			
+			{ img: 'shader.svg', x: -200, y: 100 },
+			{ class: button, img: 'on.svg', img2: 'off.svg', x: 200, y: 100 },
+			
+			{ img: 'vsync.svg', x: -200, y: 200 },
+			{ class: button, img: 'on.svg', img2: 'off.svg', x: 200, y: 200 }
 		]
 	]
 }

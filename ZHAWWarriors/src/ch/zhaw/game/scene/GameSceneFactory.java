@@ -10,6 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import ch.zhaw.game.control.ButtonController;
 import ch.zhaw.game.control.EnemyController;
 import ch.zhaw.game.control.PlayerController;
 import ch.zhaw.game.control.TriggerController;
@@ -30,6 +31,7 @@ public class GameSceneFactory {
 			put("player", PlayerController.class);
 			put("enemy", EnemyController.class);
 			put("trigger", TriggerController.class);
+			put("button", ButtonController.class);
 		};
 	};
 	
@@ -51,7 +53,10 @@ public class GameSceneFactory {
 			
 			// trigger
 			put("event", "");
-			put("load", "");
+			put("load", null);
+			
+			// button
+			put("img2", "");
 		};
 	};
 
@@ -86,41 +91,39 @@ public class GameSceneFactory {
 				int y = tileY;
 				
 				// create entity
-				if (entity.has("class")) {
-					String className = entity.getString("class");
-					JSONObject clazz = classes.has(className) ? classes.getJSONObject(className) : new JSONObject();
-					Map<String, Object> properties = readProperties(clazz, entity);
-					
-					
-					if (properties.containsKey("x")) {
-						x += ((Number)properties.get("x")).floatValue();
-					}
-					if (properties.containsKey("y")) {
-						y += ((Number)properties.get("y")).floatValue();
-					}
-
-					
-					String image = (String)properties.get("img");
-					int xFrames = (Integer)properties.get("xFrames");
-				    int yFrames = (Integer)properties.get("yFrames");
-				    boolean dynamic = (Boolean)properties.get("dynamic");
-					
-					TiledTextureRegion texture = TextureRegionFactory.extractTiledFromTexture(resourceManager.getTexture(image), xFrames, yFrames);
-					
-					Entity result = scene.createEntity((String)properties.get("party"), x, y, texture, dynamic);
-					result.setId((String)properties.get("id"));
-					result.setParty((String)properties.get("party"));
-					result.setPickable((Boolean)properties.get("pickable"));
-					
-					Class<? extends EntityController> entityControllerClass = ENTITY_CONROLLERS.get((String)properties.get("handler"));
-					if (entityControllerClass != null) {
-						EntityController entityController = 
-								entityControllerClass.getDeclaredConstructor(Entity.class, Map.class).newInstance(result, properties);
-						result.setEntityController(entityController);
-					}
-					
-					result.setSpeed(((Number)properties.get("speed")).floatValue());
+				String className = entity.has("class") ? entity.getString("class") : "";
+				JSONObject clazz = classes.has(className) ? classes.getJSONObject(className) : new JSONObject();
+				Map<String, Object> properties = readProperties(clazz, entity);
+				
+				
+				if (properties.containsKey("x")) {
+					x += ((Number)properties.get("x")).floatValue();
 				}
+				if (properties.containsKey("y")) {
+					y += ((Number)properties.get("y")).floatValue();
+				}
+
+				
+				String image = (String)properties.get("img");
+				int xFrames = (Integer)properties.get("xFrames");
+			    int yFrames = (Integer)properties.get("yFrames");
+			    boolean dynamic = (Boolean)properties.get("dynamic");
+				
+				TiledTextureRegion texture = TextureRegionFactory.extractTiledFromTexture(resourceManager.getTexture(image), xFrames, yFrames);
+				
+				Entity result = scene.createEntity((String)properties.get("party"), x, y, texture, dynamic);
+				result.setId((String)properties.get("id"));
+				result.setParty((String)properties.get("party"));
+				result.setPickable((Boolean)properties.get("pickable"));
+				
+				Class<? extends EntityController> entityControllerClass = ENTITY_CONROLLERS.get((String)properties.get("handler"));
+				if (entityControllerClass != null) {
+					EntityController entityController = 
+							entityControllerClass.getDeclaredConstructor(Entity.class, Map.class).newInstance(result, properties);
+					result.setEntityController(entityController);
+				}
+				
+				result.setSpeed(((Number)properties.get("speed")).floatValue());
 			}
 		}
 

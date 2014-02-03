@@ -13,8 +13,8 @@ public class TriggerController extends EntityController {
 	private static final String EVENT_TOUCH = "touch";
 	private static final String EVENT_CONTACT = "contact";
 	
-	private String event;
-	private String load;
+	protected String event;
+	protected String load;
 	
 	public TriggerController(Entity entity, Map<String, Object> args) {
 		super(entity);
@@ -22,7 +22,7 @@ public class TriggerController extends EntityController {
 		this.load = (String)args.get("load");
 	}
 	
-	private void onEvent(String event) {
+	protected void onEvent(String event) {
 		// check event
 		if (!event.equals(this.event)) {
 			return;
