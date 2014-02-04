@@ -19,7 +19,6 @@ import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegion
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
 
 import android.app.Activity;
 import android.content.res.AssetManager;

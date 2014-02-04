@@ -21,6 +21,7 @@ import ch.zhaw.game.entity.TouchListener;
 import ch.zhaw.game.physics.CollsisionHandler;
 import ch.zhaw.game.resource.ResourceManager;
 import ch.zhaw.game.resource.TextureEntity;
+import ch.zhaw.game.util.FixtureUtil;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -86,7 +87,7 @@ public class GameScene extends Scene  /*ContactListener,*/ {
 	public Entity createEntity(String party, float x, float y, TiledTextureRegion texture, boolean dynamic) {
 		Entity entity = new Entity(this, x, y, texture, dynamic);
 		if (dynamic) {
-			entity.createFixture(GameSceneFactory.createCircularFixture(party));
+			entity.createFixture(FixtureUtil.createCircularFixture(party));
 		}
 		entities.add(entity);
 		attachChild(entity.getSprite());
@@ -188,7 +189,7 @@ public class GameScene extends Scene  /*ContactListener,*/ {
 	
 	public Entity getEntityById(String id) {
 		for (Entity entity : entities) {
-			if (id.equals(entity.getId())) {
+			if (id.equals(entity.getEntityController().getId())) {
 				return entity;
 			}
 		}

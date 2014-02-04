@@ -2,7 +2,6 @@ package ch.zhaw.game.control;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
@@ -25,14 +24,13 @@ public class PlayerController extends EntityController implements IOnSceneTouchL
 	private Entity targetEntity;
 	private TextureEntity textureEntity;
 	
-	public PlayerController(Entity entity, Map<String, Object> args) {
-		super(entity);
-		
-		GameScene scene = entity.getScene();
+	@Override
+	public Entity onCreate() {
+		super.onCreate();
 		
 		// create player
 		List<ITextureRegion> textureList = new ArrayList<ITextureRegion>();
-		textureList.add(TextureRegionFactory.extractFromTexture(scene.getResourceManager().getTexture((String)args.get("img"))));
+		textureList.add(TextureRegionFactory.extractFromTexture(scene.getResourceManager().getTexture(img)));
 		textureEntity = scene.createTextureEntity(512, 512, textureList);
 		scene.detachChild(entity.getSprite());
 		entity.setSprite(new Sprite(scene, entity, entity.getSprite().getX(), entity.getSprite().getY(), TextureRegionFactory.extractTiledFromTexture(textureEntity.getTexture(), 4, 3)));
@@ -41,8 +39,11 @@ public class PlayerController extends EntityController implements IOnSceneTouchL
 
 		entity.setEntityController(this);
 		scene.setOnSceneTouchListener(this);
+		
+		return entity;
 	}
-	
+
+
 	@Override
 	public void onContact(EntityController entityController) {
 		Entity entity = entityController.getEntity();
@@ -50,9 +51,10 @@ public class PlayerController extends EntityController implements IOnSceneTouchL
 		if (this.entity.isEnemy(entity) && targetEntity == entity) {
 			this.entity.move(null);
 			this.entity.getSprite().animate(Entity.FRAME_SPEED, 4, 7, true);
+			entityController.onDamage(200);
 		}
 		
-		if (entity.isPickable()) {
+		if (entityController.isPickable()) {
 			entity.destroy();
 
 			

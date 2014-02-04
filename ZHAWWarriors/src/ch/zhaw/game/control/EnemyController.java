@@ -1,22 +1,25 @@
 package ch.zhaw.game.control;
 
-import java.util.Map;
-
 import org.andengine.engine.handler.IUpdateHandler;
 
-import ch.zhaw.game.Util;
 import ch.zhaw.game.entity.Entity;
 import ch.zhaw.game.entity.EntityController;
+import ch.zhaw.game.util.Util;
 
 public class EnemyController extends EntityController implements IUpdateHandler {
 	private Entity target;
 	
-	public EnemyController(Entity entity, Map<String, Object> args) {
-		super(entity);
+	@Override
+	public Entity onCreate() {
+		super.onCreate();
+		
 		entity.getSprite().registerUpdateHandler(this);
+		return entity;
 	}
 
-	
+
+
+
 	@Override
 	public void onContact(EntityController entityController) {
 		Entity entity = entityController.getEntity();
@@ -56,6 +59,12 @@ public class EnemyController extends EntityController implements IUpdateHandler 
 		entity.move(null);
 		entity.getSprite().animate(Entity.FRAME_SPEED, 4, 7, true);
 		entity.getSprite().setFlippedHorizontal(entity.getBody().getPosition().x >= entity.getBody().getPosition().x);
+	}
+	
+	
+	@Override
+	public void onDie() {
+		entity.destroy();
 	}
 
 

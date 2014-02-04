@@ -5,8 +5,8 @@ import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.util.constants.PhysicsConstants;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 
-import ch.zhaw.game.Util;
 import ch.zhaw.game.scene.GameScene;
+import ch.zhaw.game.util.Util;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -21,13 +21,9 @@ public class Entity {
 	private GameScene scene;
 	private Sprite sprite;
 	private Body body;
-	private String party;
-	private boolean pickable;
 	private boolean dynamic;
-	private float speed;
 	private Vector2 target = null;
-	private EntityController entityController;
-	private String id;
+	private EntityController entityController = new EntityController();
 	
 	public Entity(GameScene scene, float x, float y, TiledTextureRegion texture, boolean dynamic) {
 		this.scene = scene;
@@ -65,14 +61,6 @@ public class Entity {
 		return body;
 	}
 	
-	public void setSpeed(float speed) {
-		this.speed = speed;
-	}
-	
-	public float getSpeed() {
-		return speed;
-	}
-	
 	public void move(Vector2 position) {
 		this.target = position;
 	}
@@ -103,7 +91,7 @@ public class Entity {
 			sprite.animate(FRAME_SPEED, 0, 3, true);
 		}
 		
-		body.setTransform(Util.move(current, target, getSpeed(), seconds), body.getAngle());
+		body.setTransform(Util.move(current, target, entityController.getSpeed(), seconds), body.getAngle());
 	}
 	
 	public void destroy() {
@@ -112,7 +100,9 @@ public class Entity {
 	
 	public void createFixture(FixtureDef fixtureDef) {
 		Fixture fixture = body.createFixture(fixtureDef);
-		fixture.setUserData(new EntityController(this));
+		EntityController entityController = new EntityController();
+		entityController.setEntity(this);
+		fixture.setUserData(entityController);
 	}
 	
 	public void setEntityController(EntityController entityController) {
@@ -121,43 +111,13 @@ public class Entity {
 			fixture.setUserData(entityController);
 		}
 	}
-
-
-	public String getId() {
-		return id;
-	}
-
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-
-	public String getParty() {
-		return party;
-	}
-
-
-	public void setParty(String party) {
-		this.party = party;
-	}
 	
 	public boolean isEnemy(Entity entity) {
-		if ("".equals(party) || "".equals(entity.getParty())) {
+		if ("".equals(entityController.getParty()) || "".equals(entity.getEntityController().getParty())) {
 			return false;
 		}
 		
-		return !party.equals(entity.getParty());
-	}
-
-
-	public boolean isPickable() {
-		return pickable;
-	}
-
-
-	public void setPickable(boolean pickupable) {
-		this.pickable = pickupable;
+		return !entityController.getParty().equals(entity.getEntityController().getParty());
 	}
 
 
@@ -168,4 +128,21 @@ public class Entity {
 	public void setDynamic(boolean dynamic) {
 		this.dynamic = dynamic;
 	}
+
+
+	public static long[] getFRAME_SPEED() {
+		return FRAME_SPEED;
+	}
+
+
+	public Vector2 getTarget() {
+		return target;
+	}
+
+
+	public EntityController getEntityController() {
+		return entityController;
+	}
+	
+	
 }

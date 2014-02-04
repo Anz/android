@@ -1,4 +1,4 @@
-package ch.zhaw.game;
+package ch.zhaw.game.util;
 
 import com.badlogic.gdx.math.Vector2;
 

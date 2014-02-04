@@ -4,9 +4,8 @@ import org.andengine.engine.camera.Camera;
 
 import android.util.DisplayMetrics;
 import android.view.Display;
-
-import ch.zhaw.game.Util;
 import ch.zhaw.game.scene.GameScene;
+import ch.zhaw.game.util.Util;
 
 
 public class GameCamera extends Camera {
