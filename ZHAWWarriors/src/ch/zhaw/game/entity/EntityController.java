@@ -1,6 +1,7 @@
 package ch.zhaw.game.entity;
 
 import org.andengine.opengl.texture.region.TextureRegionFactory;
+import org.andengine.opengl.texture.region.TiledTextureRegion;
 
 import ch.zhaw.game.scene.GameScene;
 
@@ -21,7 +22,19 @@ public class EntityController {
 	protected String img;
 	
 	public Entity onCreate() {
-		entity = scene.createEntity(party, x, y, TextureRegionFactory.extractTiledFromTexture(scene.getResourceManager().getTexture(img), xFrames, yFrames), dynamic);
+		TiledTextureRegion region = null;
+		if (img == null) {
+			region = TextureRegionFactory.extractTiledFromTexture(scene.getResourceManager().getTexture("knight.svg"), 1, 1);
+		} else {
+			region = TextureRegionFactory.extractTiledFromTexture(scene.getResourceManager().getTexture(img), xFrames, yFrames);
+		}
+			
+		
+		entity = scene.createEntity(party, x, y, region, dynamic);
+		if (img == null) {
+			entity.getSprite().setVisible(false);
+			img = "knight.svg";
+		}
 		entity.setEntityController(this);
 		return entity;
 	}

@@ -17,6 +17,7 @@ import org.andengine.opengl.util.GLState;
 import org.andengine.util.color.Color;
 
 import ch.zhaw.game.entity.Entity;
+import ch.zhaw.game.entity.GameCamera;
 import ch.zhaw.game.entity.TouchListener;
 import ch.zhaw.game.physics.CollsisionHandler;
 import ch.zhaw.game.resource.ResourceManager;
@@ -29,6 +30,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 
 public class GameScene extends Scene  /*ContactListener,*/ {
 	protected ResourceManager resourceManager;
+	private GameCamera camera;
 	protected PhysicsWorld physicsWorld;
 	private List<Entity> entities = new LinkedList<Entity>();
 	private Set<Entity> removable = new HashSet<Entity>();
@@ -38,7 +40,8 @@ public class GameScene extends Scene  /*ContactListener,*/ {
 	private float bottom;
 	private float top;
 	
-	public GameScene(ResourceManager resourceManager, float left, float right, float bottom, float top) {
+	public GameScene(GameCamera camera, ResourceManager resourceManager, float left, float right, float bottom, float top) {
+		this.camera = camera;
 		this.resourceManager = resourceManager;
 		
 		physicsWorld = new FixedStepPhysicsWorld(60, new Vector2(0, 0), true);
@@ -141,7 +144,7 @@ public class GameScene extends Scene  /*ContactListener,*/ {
 	}
 	
 	public boolean onSceneTouchEvent(Entity entity) {
-		if (touchListener != null) {
+		if (touchListener != null && !isIgnoreUpdate()) {
 			touchListener.onTouch(entity);
 		}
 		return false;
@@ -194,6 +197,14 @@ public class GameScene extends Scene  /*ContactListener,*/ {
 			}
 		}
 		return null;
+	}
+
+	public GameCamera getCamera() {
+		return camera;
+	}
+
+	public void setCamera(GameCamera camera) {
+		this.camera = camera;
 	}
 	
 }

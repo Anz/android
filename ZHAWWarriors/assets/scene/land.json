@@ -1,6 +1,6 @@
 {
 	classes: {
-		player: { party: good, dynamic: true, img: 'knight.svg', handler: 'player', speed: 10, xFrames: 4, yFrames: 3 },
+		player: { party: good, dynamic: true, img: 'knight.svg', handler: 'player', speed: 10, xFrames: 4, yFrames: 3, life: 80 },
 		witch: { party: badass, dynamic: true, img: 'witch2.svg', handler: 'enemy', speed: 3, xFrames: 4, yFrames: 3 },
 		land: { img: 'grass.svg' },
 		box: { dynamic: true, img: 'box_ani.svg', xFrames: 4 },
@@ -11,7 +11,8 @@
 			{ class: "land" },
 			{ class: "player", id: "player", x: -100 },
 			{ class: "witch_hat"  },
-			{ class: "box", x: 100  }
+			{ class: "box", x: 100  },
+			{ handler: trigger, event: create, text: 'Ah....! Ah...!\nWhat a night. Never drunk that much... and never will! At least for today.\nWait a moment.. Where are my clothes?!\nDamn, what happend last night? Can\'t remember.\nNevermind, i should move. It isn\'t save around here.\nAnd there is also nothing to drink here!' }
 		],
 		[
 			{ class: "land" },
@@ -28,7 +29,7 @@
 		],
 		[
 			{ class: "land" },
-			{ class: "box", handler: trigger, event: contact, load: '' }
+			{ class: "box", handler: trigger, event: contact, text: 'the end' }
 		]
 	]
 }

@@ -27,7 +27,9 @@ public class Entity {
 	
 	public Entity(GameScene scene, float x, float y, TiledTextureRegion texture, boolean dynamic) {
 		this.scene = scene;
-		this.sprite = new Sprite(scene, this, x - texture.getWidth()/2, y - texture.getHeight()/2, texture);
+		if (texture != null) {
+			this.sprite = new Sprite(scene, this, x - texture.getWidth()/2, y - texture.getHeight()/2, texture);
+		}
 		this.dynamic = dynamic;
 		scene.registerTouchArea(sprite);
 		
@@ -113,6 +115,10 @@ public class Entity {
 	}
 	
 	public boolean isEnemy(Entity entity) {
+		if (entityController.getParty() == null || entity.getEntityController().getParty() == null) {
+			return false;
+		}
+		
 		if ("".equals(entityController.getParty()) || "".equals(entity.getEntityController().getParty())) {
 			return false;
 		}

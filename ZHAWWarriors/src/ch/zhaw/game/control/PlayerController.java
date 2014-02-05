@@ -14,13 +14,14 @@ import org.andengine.opengl.texture.region.TextureRegionFactory;
 import ch.zhaw.game.entity.Entity;
 import ch.zhaw.game.entity.EntityController;
 import ch.zhaw.game.entity.Sprite;
+import ch.zhaw.game.entity.TouchListener;
 import ch.zhaw.game.resource.ResourceManager;
 import ch.zhaw.game.resource.TextureEntity;
 import ch.zhaw.game.scene.GameScene;
 
 import com.badlogic.gdx.math.Vector2;
 
-public class PlayerController extends EntityController implements IOnSceneTouchListener {
+public class PlayerController extends EntityController implements IOnSceneTouchListener, TouchListener {
 	private Entity targetEntity;
 	private TextureEntity textureEntity;
 	
@@ -39,6 +40,7 @@ public class PlayerController extends EntityController implements IOnSceneTouchL
 
 		entity.setEntityController(this);
 		scene.setOnSceneTouchListener(this);
+		scene.registerTouchListener(this);
 		
 		return entity;
 	}
@@ -79,13 +81,17 @@ public class PlayerController extends EntityController implements IOnSceneTouchL
 		return false;
 	}
 
-//	@Override
-//	public void onTouch(Entity entity) {
-//		if (entity.getEntityType() == Category.STATIC) {
-//			return;
-//		}
-//		targetEntity = entity;
-//		entity.move(entity.getBody().getPosition());
-//	}
-	
+	@Override
+	public void onTouch(Entity entity) {
+		if (entity == null || !this.entity.isEnemy(entity)) {
+			return;
+		}
+		targetEntity = entity;
+		entity.move(entity.getBody().getPosition());
+	}
+
+
+	@Override
+	public void onTouch(Vector2 position) {
+	}
 }

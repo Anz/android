@@ -31,6 +31,7 @@ public class EnemyController extends EntityController implements IUpdateHandler 
 		this.entity.move(null);
 		this.entity.getSprite().animate(Entity.FRAME_SPEED, 4, 7, true);
 		this.entity.getSprite().setFlippedHorizontal(this.entity.getBody().getPosition().x >= entity.getBody().getPosition().x);
+		entityController.onDamage(10);
 	}
 	
 	@Override

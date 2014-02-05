@@ -21,7 +21,8 @@ public abstract class AbstractBaseActivity extends SimpleBaseGameActivity {
 	@Override
 	public EngineOptions onCreateEngineOptions() {
 		// initialize camera resolution based on display resolution
-		camera = new GameCamera(getWindowManager().getDefaultDisplay());
+//		camera = new GameCamera(getWindowManager().getDefaultDisplay());
+		camera = new GameCamera(1280, 720);
 		
 		// set engine options
 		EngineOptions engineOptions = new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, new FillResolutionPolicy(), camera);

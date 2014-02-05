@@ -1,6 +1,9 @@
 package ch.zhaw.game.entity;
 
 import org.andengine.engine.camera.Camera;
+import org.andengine.engine.camera.hud.HUD;
+import org.andengine.entity.primitive.Rectangle;
+import org.andengine.util.color.Color;
 
 import android.util.DisplayMetrics;
 import android.view.Display;
@@ -14,6 +17,8 @@ public class GameCamera extends Camera {
 	private float rightLimit;
 	private float topLimit;
 	private float bottomLimit;
+	private HUD hud = new HUD();
+	private Rectangle healthBar;
 	
 	public GameCamera(Display display) {
 		super(0, 0, 0, 0);
@@ -22,10 +27,13 @@ public class GameCamera extends Camera {
 		int halfWidth = displayMetrics.widthPixels / 2;
 		int halfHeight = displayMetrics.heightPixels / 2;
 		set(-halfWidth, -halfHeight, halfWidth, halfHeight);
+		setHUD(hud);
 	}
 	
-	public GameCamera(float width, float height) {
-		super(0, 0, width, height);
+	public GameCamera(int width, int height) {
+		super(0, 0, 0, 0);
+		set(-width/2, -height/2, width/2, height/2);
+		setHUD(hud);
 	}
 	
 	@Override
@@ -35,6 +43,8 @@ public class GameCamera extends Camera {
 		if (entity == null) {
 			return;
 		}
+		
+		healthBar.setWidth(Util.limit(entity.getEntityController().getLife()*150/100, 0, 100));
 		
 		// set camera
 		float x = Util.limit(entity.getSprite().getX(), leftLimit, rightLimit);
@@ -51,8 +61,13 @@ public class GameCamera extends Camera {
 		bottomLimit = scene.getBottom() - getHeight() / 2;
 		rightLimit = scene.getRight() - getWidth()/2;
 		topLimit = scene.getTop() - getHeight()/2;
+		
+		Rectangle border = new Rectangle(45, 45, 160, 40, scene.getResourceManager().getVboManager());
+		border.setColor(Color.BLACK);
+		hud.attachChild(border);
+		
+		healthBar = new Rectangle(50, 50, 150, 30, scene.getResourceManager().getVboManager());
+		healthBar.setColor(Color.RED);
+		hud.attachChild(healthBar);
 	}
-	
-	
-	
 }

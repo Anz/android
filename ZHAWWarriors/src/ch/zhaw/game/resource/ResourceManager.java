@@ -11,6 +11,8 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
 import org.andengine.extension.svg.opengl.texture.atlas.bitmap.SVGBitmapTextureAtlasTextureRegionFactory;
+import org.andengine.opengl.font.Font;
+import org.andengine.opengl.font.FontFactory;
 import org.andengine.opengl.texture.Texture;
 import org.andengine.opengl.texture.TextureManager;
 import org.andengine.opengl.texture.TextureOptions;
@@ -18,6 +20,7 @@ import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
+import org.andengine.util.color.Color;
 import org.w3c.dom.Document;
 
 import android.app.Activity;
@@ -29,12 +32,16 @@ public class ResourceManager {
 	private Map<String, Texture> imgs = new HashMap<String, Texture>();
 	private SimpleBaseGameActivity context;
 	private DisplayMetrics displayMetrics = new DisplayMetrics();
+	private Font font;
 	
 	public ResourceManager(SimpleBaseGameActivity context) {
 		this.context = context;
 		context.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 		
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
+		
+        font = FontFactory.createFromAsset(context.getFontManager(), context.getTextureManager(), 1024, 1024, TextureOptions.BILINEAR, context.getAssets(), "font/cour.ttf", 40, true, Color.WHITE_ABGR_PACKED_INT);
+		font.load();
 	}
 	
 	public Texture getTexture(String name) {
@@ -111,4 +118,10 @@ public class ResourceManager {
 	public int getDisplayHeight() {
 		return displayMetrics.heightPixels;
 	}
+
+	public Font getFont() {
+		return font;
+	}
+	
+	
 }

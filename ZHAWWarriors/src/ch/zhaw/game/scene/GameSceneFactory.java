@@ -8,10 +8,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import ch.zhaw.game.control.ButtonController;
+import ch.zhaw.game.control.DebugController;
 import ch.zhaw.game.control.EnemyController;
 import ch.zhaw.game.control.PlayerController;
 import ch.zhaw.game.control.TriggerController;
 import ch.zhaw.game.entity.EntityController;
+import ch.zhaw.game.entity.GameCamera;
 import ch.zhaw.game.resource.ResourceManager;
 import ch.zhaw.game.util.FileUtil;
 import ch.zhaw.game.util.JSONUtil;
@@ -24,10 +26,11 @@ public class GameSceneFactory {
 			put("enemy", EnemyController.class);
 			put("trigger", TriggerController.class);
 			put("button", ButtonController.class);
+			put("debug", DebugController.class);
 		};
 	};
 
-	public static GameScene loadScene(ResourceManager resourceManager, String fileName) throws Exception {
+	public static GameScene loadScene(GameCamera camera, ResourceManager resourceManager, String fileName) throws Exception {
 		// open stream
 		InputStream input = resourceManager.getAssetManager().open(fileName);
 
@@ -37,7 +40,7 @@ public class GameSceneFactory {
 		JSONArray tiles = map.getJSONArray("tiles");
 		
 		// create game scene
-		GameScene scene = new GameScene(resourceManager, -512, tiles.length() * 1024-512, -50, 512);
+		GameScene scene = new GameScene(camera, resourceManager, -512, tiles.length() * 1024-512, -50, 512);
 
 		// for each tile
 		for (int i = 0; i < tiles.length(); i++) {
