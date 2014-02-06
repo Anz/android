@@ -10,8 +10,6 @@
 		[
 			{ class: "land" },
 			{ class: "player", id: "player", x: -100 },
-			{ class: "witch_hat"  },
-			{ class: "box", x: 100  },
 			{ handler: trigger, event: create, text: 'Ah....! Ah...!\nWhat a night. Never drunk that much... and never will! At least for today.\nWait a moment.. Where are my clothes?!\nDamn, what happend last night? Can\'t remember.\nNevermind, i should move. It isn\'t save around here.\nAnd there is also nothing to drink here!' }
 		],
 		[

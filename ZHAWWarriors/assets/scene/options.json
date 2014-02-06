@@ -7,7 +7,7 @@
 	tiles: [
 		[
 			{ img: 'title.svg', y:  -300 },
-			{ class: menu, img: 'back.svg', load: '', x: -600, y: -280 },
+			{ class: menu, img: 'back.svg', load: '', x: -500, y: -280 },
 			{ img: 'options.svg', y: -200 },
 			
 			{ img: 'sound.svg', x: -200 },
