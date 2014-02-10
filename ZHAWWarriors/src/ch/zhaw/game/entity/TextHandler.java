@@ -3,6 +3,7 @@ package ch.zhaw.game.entity;
 import org.andengine.engine.handler.timer.ITimerCallback;
 import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.entity.primitive.Rectangle;
+import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.ITouchArea;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.text.Text;
@@ -24,6 +25,7 @@ public class TextHandler extends org.andengine.entity.Entity  implements ITouchA
 	private int i = 0;
 	private int wait = 2;
 	private TimerHandler timerHandler;
+	private IOnSceneTouchListener onSceneTouchListener;
 	
 	public TextHandler(final Scene scene, ResourceManager resourceManager, final String str, float x, float y, float width, float height, final float seconds) {
 		//setZIndex(10000);
@@ -35,6 +37,9 @@ public class TextHandler extends org.andengine.entity.Entity  implements ITouchA
 		Rectangle border = new Rectangle(x, y, width, 2, resourceManager.getVboManager());
 		border.setColor(Color.WHITE);
 		attachChild(border);
+		
+//		onSceneTouchListener = scene.getOnSceneTouchListener();
+//		scene.setOnSceneTouchListener(null);
 		
 		this.scene = scene;
 		maxLength = str.length();
@@ -86,7 +91,7 @@ public class TextHandler extends org.andengine.entity.Entity  implements ITouchA
 		
 		attachChild(text);
 		registerUpdateHandler(timerHandler);
-		scene.setIgnoreUpdate(true);
+//		scene.setIgnoreUpdate(true);
 		scene.registerTouchArea(this);
 	}
 
@@ -119,7 +124,8 @@ public class TextHandler extends org.andengine.entity.Entity  implements ITouchA
 //		scene.unregisterTouchArea(this);
 		unregisterUpdateHandler(timerHandler);
 		detachSelf();
-		scene.setIgnoreUpdate(false);
+//		scene.setOnSceneTouchListener(onSceneTouchListener);
+//		scene.setIgnoreUpdate(false);
 	}
 	
 }

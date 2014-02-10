@@ -76,7 +76,6 @@ public class ResourceManager {
 		        
 		        int width = ((Number)xpath.evaluate("//svg/@width", doc, XPathConstants.NUMBER)).intValue();
 		        int height = ((Number)xpath.evaluate("//svg/@height", doc, XPathConstants.NUMBER)).intValue();
-		        Log.i("###width", "load " + name + ": " + width + " " + height);
 				
 				BitmapTextureAtlas texture = new BitmapTextureAtlas(context.getTextureManager(), width, height, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 				

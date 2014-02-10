@@ -1,13 +1,13 @@
 package ch.zhaw.game.control;
 
+import ch.zhaw.game.entity.Event;
+
 
 public class DebugController extends ButtonController {
 	private static boolean debugMode = false;
 
-	@Override
-	protected void onEvent(String event) {
-		super.onEvent(event);
-		
+	@Event
+	public void onEvent(String event) {
 		// check event
 		if (!event.equals(this.event)) {
 			return;

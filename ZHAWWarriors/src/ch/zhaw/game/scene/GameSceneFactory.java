@@ -7,12 +7,15 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import ch.zhaw.game.control.AnimateController;
 import ch.zhaw.game.control.ButtonController;
 import ch.zhaw.game.control.DebugController;
+import ch.zhaw.game.control.DefaultController;
 import ch.zhaw.game.control.EnemyController;
 import ch.zhaw.game.control.PlayerController;
 import ch.zhaw.game.control.TriggerController;
 import ch.zhaw.game.entity.EntityController;
+import ch.zhaw.game.entity.EntityControllerInvoker;
 import ch.zhaw.game.entity.GameCamera;
 import ch.zhaw.game.resource.ResourceManager;
 import ch.zhaw.game.util.FileUtil;
@@ -24,6 +27,7 @@ public class GameSceneFactory {
 		{
 			put("player", PlayerController.class);
 			put("enemy", EnemyController.class);
+			put("animate", AnimateController.class);
 			put("trigger", TriggerController.class);
 			put("button", ButtonController.class);
 			put("debug", DebugController.class);
@@ -62,7 +66,7 @@ public class GameSceneFactory {
 				JSONUtil.copy(clazz, entityController);
 				JSONUtil.copy(entity, entityController);
 				entityController.setScene(scene);
-				entityController.onCreate();
+				EntityControllerInvoker.invoke(entityController, "create");
 			}
 		}
 		return scene;
@@ -75,7 +79,7 @@ public class GameSceneFactory {
 		} else if (clazz.has("handler")) {
 			handler = clazz.getString("handler");
 		} else {
-			return new EntityController();
+			return new DefaultController();
 		}
 		
 		Class<? extends EntityController> entityControllerClass = ENTITY_CONROLLERS.get(handler);

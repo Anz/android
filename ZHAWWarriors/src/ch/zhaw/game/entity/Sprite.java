@@ -14,6 +14,8 @@ public class Sprite extends AnimatedSprite {
 		super(x, y, texture, scene.getResourceManager().getVboManager());
 		this.scene = scene;
 		this.entity = entity;
+		
+		scene.registerTouchArea(this);
 	}
 
 	@Override

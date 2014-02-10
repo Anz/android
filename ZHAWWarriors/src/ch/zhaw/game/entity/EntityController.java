@@ -1,5 +1,7 @@
 package ch.zhaw.game.entity;
 
+import org.andengine.entity.primitive.Rectangle;
+import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.opengl.texture.region.TextureRegionFactory;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 
@@ -15,35 +17,42 @@ public class EntityController {
 	protected float speed; 
 	protected float x;
 	protected float y;
+	protected int z;
 	protected int xFrames = 1;
 	protected int yFrames = 1;
 	protected boolean dynamic;
 	protected boolean pickable;
 	protected String img;
+	protected long animate;
 	
-	public Entity onCreate() {
+	protected float width;
+	protected float height;
+	protected float red;
+	protected float green;
+	protected float blue;
+
+	protected Entity create() {
 		TiledTextureRegion region = null;
 		if (img == null) {
-			region = TextureRegionFactory.extractTiledFromTexture(scene.getResourceManager().getTexture("knight.svg"), 1, 1);
+			Rectangle rect = new Rectangle(x - width/2, y - height/2, width, height, scene.getResourceManager().getVboManager());
+			rect.setColor(red, green, blue);
+			entity = scene.createEntity(party, x, y, rect, dynamic);
 		} else {
 			region = TextureRegionFactory.extractTiledFromTexture(scene.getResourceManager().getTexture(img), xFrames, yFrames);
+			entity = scene.createEntity(party, x, y, region, dynamic);
 		}
-			
-		
-		entity = scene.createEntity(party, x, y, region, dynamic);
-		if (img == null) {
-			entity.getSprite().setVisible(false);
-			img = "knight.svg";
-		}
+		entity.getSprite().setZIndex(z);
 		entity.setEntityController(this);
+		
+		if (animate > 0) {
+			if (entity.getSprite() instanceof AnimatedSprite) {
+				AnimatedSprite animatedSprite = (AnimatedSprite)entity.getSprite();
+				animatedSprite.animate(animate);
+			}
+		}
+		
 		return entity;
 	}
-	
-	public void onTouch() {}
-	
-	public void onContact(EntityController entity) {}
-	
-	public void onContactEnd(EntityController entity) {}
 	
 	public void onDamage(int damage) {
 		life -= damage;

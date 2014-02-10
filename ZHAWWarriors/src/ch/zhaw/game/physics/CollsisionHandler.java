@@ -1,6 +1,7 @@
 package ch.zhaw.game.physics;
 
 import ch.zhaw.game.entity.EntityController;
+import ch.zhaw.game.entity.EntityControllerInvoker;
 
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
@@ -17,8 +18,8 @@ public class CollsisionHandler implements ContactListener {
 			return;
 		}
 		
-		entityControllerA.onContact(entityControllerB);
-		entityControllerB.onContact(entityControllerA);
+		EntityControllerInvoker.invoke(entityControllerA, "contact", entityControllerB);
+		EntityControllerInvoker.invoke(entityControllerB, "contact", entityControllerA);
 	}
 
 	@Override
@@ -30,8 +31,8 @@ public class CollsisionHandler implements ContactListener {
 			return;
 		}
 		
-		entityControllerA.onContactEnd(entityControllerB);
-		entityControllerB.onContactEnd(entityControllerA);
+		EntityControllerInvoker.invoke(entityControllerA, "contact_end", entityControllerB);
+		EntityControllerInvoker.invoke(entityControllerB, "contact_end", entityControllerA);
 	}
 
 	@Override

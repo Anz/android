@@ -1,5 +1,8 @@
 package ch.zhaw.game.entity;
 
+import org.andengine.entity.IEntity;
+import org.andengine.entity.shape.IAreaShape;
+import org.andengine.entity.shape.RectangularShape;
 import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.util.constants.PhysicsConstants;
@@ -19,7 +22,7 @@ public class Entity {
 	public static long FRAME_SPEED[] = { 200l, 200l, 200l, 200l };
 	
 	private GameScene scene;
-	private Sprite sprite;
+	private IEntity sprite;
 	private Body body;
 	private boolean dynamic;
 	private Vector2 target = null;
@@ -31,7 +34,9 @@ public class Entity {
 			this.sprite = new Sprite(scene, this, x - texture.getWidth()/2, y - texture.getHeight()/2, texture);
 		}
 		this.dynamic = dynamic;
-		scene.registerTouchArea(sprite);
+		if (sprite instanceof RectangularShape) {
+			scene.registerTouchArea((RectangularShape)sprite);
+		}
 		
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.type = dynamic ? BodyType.DynamicBody : BodyType.StaticBody;
@@ -41,7 +46,32 @@ public class Entity {
 		
 		this.body.setUserData(this);
 		this.body.setFixedRotation(true);
-		scene.getPhysicsWorld().registerPhysicsConnector(new PhysicsConnector(sprite, this.body, true, true));
+		if (sprite instanceof RectangularShape) {
+			scene.getPhysicsWorld().registerPhysicsConnector(new PhysicsConnector((RectangularShape)sprite, this.body, true, true));
+		}
+		
+		sprite.setCullingEnabled(true);
+	}
+	
+	public Entity(GameScene scene, float x, float y, IEntity ientity, boolean dynamic) {
+		this.scene = scene;
+		this.sprite = ientity;
+		this.dynamic = dynamic;
+		if (sprite instanceof RectangularShape) {
+			scene.registerTouchArea((RectangularShape)sprite);
+		}
+		
+		BodyDef bodyDef = new BodyDef();
+		bodyDef.type = dynamic ? BodyType.DynamicBody : BodyType.StaticBody;
+		bodyDef.position.x = x / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT;
+		bodyDef.position.y = y / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT;
+		this.body = scene.getPhysicsWorld().createBody(bodyDef);
+		
+		this.body.setUserData(this);
+		this.body.setFixedRotation(true);
+		if (sprite instanceof IAreaShape) {
+			scene.getPhysicsWorld().registerPhysicsConnector(new PhysicsConnector((IAreaShape)sprite, this.body, true, true));
+		}
 		
 		sprite.setCullingEnabled(true);
 	}
@@ -51,11 +81,11 @@ public class Entity {
 		return scene;
 	}
 
-	public AnimatedSprite getSprite() {
+	public IEntity getSprite() {
 		return sprite;
 	}
 
-	public void setSprite(Sprite sprite) {
+	public void setSprite(IEntity sprite) {
 		this.sprite = sprite;
 	}
 
@@ -69,7 +99,8 @@ public class Entity {
 	
 	public void onTouch() {
 		if (entityController != null) {
-			entityController.onTouch();
+//			entityController.onTouch();
+			EntityControllerInvoker.invoke(entityController, "touch");
 		}
 	}
 
@@ -86,11 +117,14 @@ public class Entity {
 		Vector2 current = body.getPosition();
 		
 		// flip
-		sprite.setFlippedHorizontal(current.x >= target.x);
-		
-		// animation
-		if (!sprite.isAnimationRunning() || sprite.getCurrentTileIndex() > 3) {
-			sprite.animate(FRAME_SPEED, 0, 3, true);
+		if (sprite instanceof AnimatedSprite) {
+			AnimatedSprite animatedSprite = (AnimatedSprite)sprite;
+			animatedSprite.setFlippedHorizontal(current.x >= target.x);
+			
+			// animation
+			if (!animatedSprite.isAnimationRunning() || animatedSprite.getCurrentTileIndex() > 3) {
+				animatedSprite.animate(FRAME_SPEED, 0, 3, true);
+			}
 		}
 		
 		body.setTransform(Util.move(current, target, entityController.getSpeed(), seconds), body.getAngle());

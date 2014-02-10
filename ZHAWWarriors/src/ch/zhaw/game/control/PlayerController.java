@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
+import org.andengine.entity.shape.RectangularShape;
+import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.util.constants.PhysicsConstants;
 import org.andengine.input.touch.TouchEvent;
@@ -13,6 +15,7 @@ import org.andengine.opengl.texture.region.TextureRegionFactory;
 
 import ch.zhaw.game.entity.Entity;
 import ch.zhaw.game.entity.EntityController;
+import ch.zhaw.game.entity.Event;
 import ch.zhaw.game.entity.Sprite;
 import ch.zhaw.game.entity.TouchListener;
 import ch.zhaw.game.resource.ResourceManager;
@@ -25,9 +28,9 @@ public class PlayerController extends EntityController implements IOnSceneTouchL
 	private Entity targetEntity;
 	private TextureEntity textureEntity;
 	
-	@Override
+	@Event(filter="create")
 	public Entity onCreate() {
-		super.onCreate();
+		super.create();
 		
 		// create player
 		List<ITextureRegion> textureList = new ArrayList<ITextureRegion>();
@@ -36,7 +39,10 @@ public class PlayerController extends EntityController implements IOnSceneTouchL
 		scene.detachChild(entity.getSprite());
 		entity.setSprite(new Sprite(scene, entity, entity.getSprite().getX(), entity.getSprite().getY(), TextureRegionFactory.extractTiledFromTexture(textureEntity.getTexture(), 4, 3)));
 		scene.attachChild(entity.getSprite());
-		scene.getPhysicsWorld().registerPhysicsConnector(new PhysicsConnector(entity.getSprite(), entity.getBody(), true, true));
+		if (entity.getSprite() instanceof RectangularShape) {
+			RectangularShape rect = (RectangularShape)entity.getSprite();
+			scene.getPhysicsWorld().registerPhysicsConnector(new PhysicsConnector(rect, entity.getBody(), true, true));
+		}
 
 		entity.setEntityController(this);
 		scene.setOnSceneTouchListener(this);
@@ -46,13 +52,16 @@ public class PlayerController extends EntityController implements IOnSceneTouchL
 	}
 
 
-	@Override
-	public void onContact(EntityController entityController) {
+	@Event(filter="contact")
+	private void onContact(EntityController entityController) {
 		Entity entity = entityController.getEntity();
 		
-		if (this.entity.isEnemy(entity) && targetEntity == entity) {
+		if (this.entity.isEnemy(entity)) {
 			this.entity.move(null);
-			this.entity.getSprite().animate(Entity.FRAME_SPEED, 4, 7, true);
+			if (this.entity.getSprite() instanceof AnimatedSprite) {
+				AnimatedSprite animatedSprite = (AnimatedSprite)this.entity.getSprite();
+				animatedSprite.animate(Entity.FRAME_SPEED, 4, 7, true);
+			}
 			entityController.onDamage(200);
 		}
 		

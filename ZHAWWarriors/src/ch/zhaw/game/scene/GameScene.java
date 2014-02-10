@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.andengine.engine.camera.Camera;
+import org.andengine.entity.IEntity;
 import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.Scene;
 import org.andengine.extension.physics.box2d.FixedStepPhysicsWorld;
@@ -89,6 +90,16 @@ public class GameScene extends Scene  /*ContactListener,*/ {
 	
 	public Entity createEntity(String party, float x, float y, TiledTextureRegion texture, boolean dynamic) {
 		Entity entity = new Entity(this, x, y, texture, dynamic);
+		if (dynamic) {
+			entity.createFixture(FixtureUtil.createCircularFixture(party));
+		}
+		entities.add(entity);
+		attachChild(entity.getSprite());
+		return entity;
+	}
+	
+	public Entity createEntity(String party, float x, float y, IEntity ientity, boolean dynamic) {
+		Entity entity = new Entity(this, x, y, ientity, dynamic);
 		if (dynamic) {
 			entity.createFixture(FixtureUtil.createCircularFixture(party));
 		}

@@ -4,6 +4,9 @@
 	},
 	tiles: [
 		[
+			{ img: 'witch_menu.svg', x: 550, y: 100 },
+			{ img: 'andengine.svg', x: -400, y: 200 },
+			
 			{ img: 'title.svg', y:  -300 },
 			{ class: menu, img: 'start.svg', load: 'scene/land.json', y: -150 },
 			{ class: menu, img: 'options.svg', load: 'scene/options.json' }
