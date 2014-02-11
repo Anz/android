@@ -3,7 +3,7 @@ package ch.zhaw.game.control;
 import ch.zhaw.game.entity.Event;
 
 
-public class DebugController extends ButtonController {
+public class DebugController extends TriggerController {
 	private static boolean debugMode = false;
 
 	@Event

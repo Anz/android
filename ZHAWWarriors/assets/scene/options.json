@@ -1,8 +1,7 @@
 {
 	classes: {
 		menu: { handler: trigger, event: touch },
-		button: { handler: button, event: touch },
-		button: { handler: button, event: touch }
+		button: { handler: trigger, event: touch, img: 'on_off.svg', xFrames: 2 }
 	},
 	tiles: [
 		[
@@ -11,16 +10,16 @@
 			{ img: 'options.svg', y: -200 },
 			
 			{ img: 'sound.svg', x: -200 },
-			{ class: button, img: 'on.svg', img2: 'off.svg', x: 200 },
+			{ class: button, x: 200 },
 			
 			{ img: 'shader.svg', x: -200, y: 100 },
-			{ class: button, img: 'on.svg', img2: 'off.svg', x: 200, y: 100 },
+			{ class: button, x: 200, y: 100 },
 			
 			{ img: 'vsync.svg', x: -200, y: 200 },
-			{ class: button, img: 'on.svg', img2: 'off.svg', x: 200, y: 200 },
+			{ class: button, x: 200, y: 200 },
 			
 			{ img: 'debug.svg', x: -200, y: 300 },
-			{ class: button, handler: debug, img: 'off.svg', img2: 'on.svg', x: 200, y: 300 }
+			{ class: button, handler: debug, x: 200, y: 300 }
 		]
 	]
 }

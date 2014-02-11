@@ -5,20 +5,20 @@
 		land: { img: 'grass.svg' },
 		box: { dynamic: true, img: 'box_ani.svg', xFrames: 4 },
 		witch_hat: { pickable: true, dynamic: true, img: 'witch_hat.svg', xFrames: 4, y: 200 },
-		fog: { handler: animate, event: create, target: 0, property: alpha, speed: 0.01, interval: -0.001 }
+		fog: { handler: animate, event: create, target: 0, property: alpha, speed: 0.01, interval: -0.001, dynamic: true }
 	},
 	tiles: [
 		[
 			{ class: "land" },
 			{ class: "player", id: "player", x: -100 },
 			{ handler: trigger, event: create, text: 'Ah....! Ah...!\nWhat a night. Never drunk that much... and never will! At least for today.\nWait a moment.. Where are my clothes?!\nDamn, what happend last night? Can\'t remember.\nNevermind, i should move. It isn\'t save around here.\nAnd there is also nothing to drink here!' },
-			{ class: "fog", width: 1024, height: 1024, z: 100000 }
+			{ class: "fog", width: 1024, height: 1024 }
 		],
 		[
 			{ class: "land" },
 			{ class: "witch_hat", x: -200 },
 			{ class: "witch" },
-			{ class: "fog", width: 1024, height: 1024, z: 100000 }
+			{ class: "fog", width: 1024, height: 1024, z: 1000000 }
 		],
 		[
 			{ class: "land" }

@@ -9,7 +9,7 @@ import org.andengine.extension.physics.box2d.util.constants.PhysicsConstants;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 
 import ch.zhaw.game.scene.GameScene;
-import ch.zhaw.game.util.Util;
+import ch.zhaw.game.util.MathUtil;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -27,6 +27,7 @@ public class Entity {
 	private boolean dynamic;
 	private Vector2 target = null;
 	private EntityController entityController = new EntityController();
+	private long lastTouch = 0;
 	
 	public Entity(GameScene scene, float x, float y, TiledTextureRegion texture, boolean dynamic) {
 		this.scene = scene;
@@ -97,7 +98,13 @@ public class Entity {
 		this.target = position;
 	}
 	
-	public void onTouch() {
+	public void onTouch() {	
+		long current = System.currentTimeMillis();
+		if (current - lastTouch < 500) {
+			return;
+		}
+		lastTouch = current;
+		
 		if (entityController != null) {
 //			entityController.onTouch();
 			EntityControllerInvoker.invoke(entityController, "touch");
@@ -127,7 +134,7 @@ public class Entity {
 			}
 		}
 		
-		body.setTransform(Util.move(current, target, entityController.getSpeed(), seconds), body.getAngle());
+		body.setTransform(MathUtil.move(current, target, entityController.getSpeed(), seconds), body.getAngle());
 	}
 	
 	public void destroy() {

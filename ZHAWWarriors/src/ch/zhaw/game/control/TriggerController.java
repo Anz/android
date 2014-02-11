@@ -1,5 +1,7 @@
 package ch.zhaw.game.control;
 
+import org.andengine.entity.sprite.AnimatedSprite;
+
 import android.app.Activity;
 import android.content.Intent;
 import ch.zhaw.game.activity.AbstractBaseActivity;
@@ -13,6 +15,7 @@ public class TriggerController extends EntityController {
 	protected String event;
 	protected String load;
 	protected String text;
+	private int frame = 0;
 	
 	@Event(filter="create")
 	protected void onCreate() {
@@ -42,6 +45,13 @@ public class TriggerController extends EntityController {
 		if (text != null) {
 			GameCamera camera = scene.getCamera();
 			camera.getHUD().attachChild(new TextHandler(scene, scene.getResourceManager(), text, 0, camera.getHeight()-200, camera.getWidth(), 200, 0.1f));
+		}
+		
+		// if has animation
+		if (entity.getSprite() instanceof AnimatedSprite) {
+			frame = (frame + 1) % xFrames;
+			AnimatedSprite sprite = (AnimatedSprite)entity.getSprite();
+			sprite.setCurrentTileIndex(frame);
 		}
 	}
 }

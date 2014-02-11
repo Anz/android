@@ -8,7 +8,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import ch.zhaw.game.control.AnimateController;
-import ch.zhaw.game.control.ButtonController;
 import ch.zhaw.game.control.DebugController;
 import ch.zhaw.game.control.DefaultController;
 import ch.zhaw.game.control.EnemyController;
@@ -29,7 +28,6 @@ public class GameSceneFactory {
 			put("enemy", EnemyController.class);
 			put("animate", AnimateController.class);
 			put("trigger", TriggerController.class);
-			put("button", ButtonController.class);
 			put("debug", DebugController.class);
 		};
 	};

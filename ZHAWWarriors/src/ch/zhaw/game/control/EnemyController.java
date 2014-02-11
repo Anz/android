@@ -10,7 +10,7 @@ import org.andengine.opengl.texture.region.TiledTextureRegion;
 import ch.zhaw.game.entity.Entity;
 import ch.zhaw.game.entity.EntityController;
 import ch.zhaw.game.entity.Event;
-import ch.zhaw.game.util.Util;
+import ch.zhaw.game.util.MathUtil;
 
 import com.badlogic.gdx.math.Vector2;
 
@@ -92,7 +92,7 @@ public class EnemyController extends EntityController implements IUpdateHandler 
 			return;
 		}
 		
-		if (Util.distance(entity.getBody().getPosition(), target.getBody().getPosition()) > 1) {
+		if (MathUtil.distance(entity.getBody().getPosition(), target.getBody().getPosition()) > 1) {
 			entity.move(entity.getBody().getPosition());
 			return;
 		}

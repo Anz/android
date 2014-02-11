@@ -22,17 +22,26 @@ public class AnimateController extends EntityController {
 	protected Method setter;
 	protected boolean higher;
 	
+//	@Event(filter="create")
+//	private void onCreate() {
+//		super.create();
+//	}
+	
 	
 	@Event
 	public void onEvent(String name) {
+		if ("create".equals(name)) {
+			super.create();
+		}
+		
 		if (!name.equals(event)) {
 			return;
 		}
 		
 		try {
-			field = ReflectionUtil.getField(this.entity.getSprite(), property);
-			getter = ReflectionUtil.getMethod(this.entity.getSprite(), "get" + Character.toUpperCase(property.charAt(0)) + property.substring(1), new Class<?>[0]);
-			setter = ReflectionUtil.getMethod(this.entity.getSprite(), "set" + Character.toUpperCase(property.charAt(0)) + property.substring(1), new Class<?>[] { float.class });
+			field = ReflectionUtil.getField(entity.getSprite(), property);
+			getter = ReflectionUtil.getMethod(entity.getSprite(), "get" + Character.toUpperCase(property.charAt(0)) + property.substring(1), new Class<?>[0]);
+			setter = ReflectionUtil.getMethod(entity.getSprite(), "set" + Character.toUpperCase(property.charAt(0)) + property.substring(1), new Class<?>[] { float.class });
 			
 			if (field == null && (getter == null || setter == null)) {
 				return;
@@ -54,7 +63,8 @@ public class AnimateController extends EntityController {
 							scene.unregisterUpdateHandler(timerHandler);
 						}
 						
-						ReflectionUtil.set(AnimateController.this.entity.getSprite(), property, value);
+//						ReflectionUtil.set(AnimateController.this.entity.getSprite(), property, value);
+						setValue(value);
 					} catch (Exception e) {
 						Log.e("AnimateControoler", "error during interval", e);
 					}
@@ -82,16 +92,16 @@ public class AnimateController extends EntityController {
 		
 		return 0;
 	}
-//	
-//	private void setValue(float value) {
-//		try {
-//			if (field != null) {
-//				field.setFloat(entity.getSprite(), value);
-//			} else if (setter != null){			
-//				setter.invoke(entity.getSprite(), new Object[] { value });
-//			}
-//		} catch (Exception e) {
-//			Log.e("AnimateController", "cannot set value", e);
-//		}
-//	}
+	
+	private void setValue(float value) {
+		try {
+			if (field != null) {
+				field.setFloat(entity.getSprite(), value);
+			} else if (setter != null){			
+				setter.invoke(entity.getSprite(), new Object[] { value });
+			}
+		} catch (Exception e) {
+			Log.e("AnimateController", "cannot set value", e);
+		}
+	}
 }

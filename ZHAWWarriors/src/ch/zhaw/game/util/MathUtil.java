@@ -2,8 +2,8 @@ package ch.zhaw.game.util;
 
 import com.badlogic.gdx.math.Vector2;
 
-public final class Util {
-	private Util() {}
+public final class MathUtil {
+	private MathUtil() {}
 	
 	public static float distance(Vector2 a, Vector2 b) {
 		return a.cpy().sub(b).len();

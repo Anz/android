@@ -8,7 +8,7 @@ import org.andengine.util.color.Color;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import ch.zhaw.game.scene.GameScene;
-import ch.zhaw.game.util.Util;
+import ch.zhaw.game.util.MathUtil;
 
 
 public class GameCamera extends Camera {
@@ -44,11 +44,11 @@ public class GameCamera extends Camera {
 			return;
 		}
 		
-		healthBar.setWidth(Util.limit(entity.getEntityController().getLife()*150/100, 0, 100));
+		healthBar.setWidth(MathUtil.limit(entity.getEntityController().getLife()*150/100, 0, 100));
 		
 		// set camera
-		float x = Util.limit(entity.getSprite().getX(), leftLimit, rightLimit);
-		float y = Util.limit(entity.getSprite().getY(), bottomLimit, topLimit);
+		float x = MathUtil.limit(entity.getSprite().getX(), leftLimit, rightLimit);
+		float y = MathUtil.limit(entity.getSprite().getY(), bottomLimit, topLimit);
 		setCenter(x, y);		
 	}
 	

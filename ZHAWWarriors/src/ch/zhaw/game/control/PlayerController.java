@@ -27,13 +27,13 @@ import com.badlogic.gdx.math.Vector2;
 public class PlayerController extends EntityController implements IOnSceneTouchListener, TouchListener {
 	private Entity targetEntity;
 	private TextureEntity textureEntity;
+	private List<ITextureRegion> textureList = new ArrayList<ITextureRegion>();
 	
 	@Event(filter="create")
 	public Entity onCreate() {
 		super.create();
 		
 		// create player
-		List<ITextureRegion> textureList = new ArrayList<ITextureRegion>();
 		textureList.add(TextureRegionFactory.extractFromTexture(scene.getResourceManager().getTexture(img)));
 		textureEntity = scene.createTextureEntity(512, 512, textureList);
 		scene.detachChild(entity.getSprite());
@@ -72,11 +72,20 @@ public class PlayerController extends EntityController implements IOnSceneTouchL
 			final GameScene scene =  this.entity.getScene();
 			final ResourceManager resourceManager = scene.getResourceManager();
 			
-			List<ITextureRegion> textureList = new ArrayList<ITextureRegion>();
-			textureList.add(TextureRegionFactory.extractFromTexture(resourceManager.getTexture("knight.svg")));
+//			List<ITextureRegion> textureList = new ArrayList<ITextureRegion>();
+//			textureList.add(TextureRegionFactory.extractFromTexture(resourceManager.getTexture("knight.svg")));
 			textureList.add(TextureRegionFactory.extractFromTexture(resourceManager.getTexture("witch_hat.svg")));
 			textureEntity.update(textureList);
 		}
+	}
+	
+	@Event(filter="resume")
+	private void onResume() {
+		ResourceManager resourceManager = scene.getResourceManager();
+		textureList.clear();
+		textureList.add(TextureRegionFactory.extractFromTexture(resourceManager.getTexture("knight.svg")));
+		textureList.add(TextureRegionFactory.extractFromTexture(resourceManager.getTexture("witch_hat.svg")));
+		textureEntity.update(textureList);
 	}
 	
 	@Override
