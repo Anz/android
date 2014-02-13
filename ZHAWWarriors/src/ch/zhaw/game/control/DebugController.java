@@ -1,8 +1,9 @@
 package ch.zhaw.game.control;
 
+import ch.zhaw.game.entity.Controller;
 import ch.zhaw.game.entity.Event;
 
-
+@Controller(name="debug")
 public class DebugController extends TriggerController {
 	private static boolean debugMode = false;
 

@@ -1,38 +1,45 @@
 package ch.zhaw.game.scene;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import ch.zhaw.game.control.AnimateController;
-import ch.zhaw.game.control.DebugController;
-import ch.zhaw.game.control.DefaultController;
-import ch.zhaw.game.control.EnemyController;
-import ch.zhaw.game.control.PlayerController;
-import ch.zhaw.game.control.TriggerController;
+import ch.zhaw.game.entity.Controller;
 import ch.zhaw.game.entity.EntityController;
 import ch.zhaw.game.entity.EntityControllerInvoker;
 import ch.zhaw.game.entity.GameCamera;
 import ch.zhaw.game.resource.ResourceManager;
 import ch.zhaw.game.util.FileUtil;
 import ch.zhaw.game.util.JSONUtil;
+import ch.zhaw.game.util.ReflectionUtil;
 
 public class GameSceneFactory {
-	private static final Map<String, Class<? extends EntityController>> ENTITY_CONROLLERS = new HashMap<String, Class<? extends EntityController>>() {
-		private static final long serialVersionUID = 1L;
-		{
-			put("player", PlayerController.class);
-			put("enemy", EnemyController.class);
-			put("animate", AnimateController.class);
-			put("trigger", TriggerController.class);
-			put("debug", DebugController.class);
-		};
-	};
+	private ResourceManager resourceManager;
+	private Map<String, Class<?>> controllers = new HashMap<String, Class<?>>();
+	
+	public GameSceneFactory(ResourceManager resourceManager, String packageName) throws IOException {
+		this.resourceManager = resourceManager;
+		List<Class<?>> classes = ReflectionUtil.getClasses(resourceManager.getActivity(), packageName);
+		
+		for (Class<?> clazz : classes) {
+			for (Annotation annotation : clazz.getDeclaredAnnotations()) {
+				if (!(annotation instanceof Controller)) {
+					continue;
+				}
+				
+				Controller controller = (Controller)annotation;
+				controllers.put(controller.name(), clazz);
+			}
+		}
+	}
 
-	public static GameScene loadScene(GameCamera camera, ResourceManager resourceManager, String fileName) throws Exception {
+	public GameScene loadScene(GameCamera camera, String fileName) throws Exception {
 		// open stream
 		InputStream input = resourceManager.getAssetManager().open(fileName);
 
@@ -59,28 +66,36 @@ public class GameSceneFactory {
 				clazz.put("x", tileX + (clazz.has("x") ? clazz.getDouble("x") : 0));
 				entity.put("x", tileX + (entity.has("x") ? entity.getDouble("x") : 0));
 				
-				EntityController entityController = resolveEntityController(clazz, entity);
-					
-				JSONUtil.copy(clazz, entityController);
-				JSONUtil.copy(entity, entityController);
-				entityController.setScene(scene);
-				EntityControllerInvoker.invoke(entityController, "create");
+//				EntityController entityController = resolveEntityController(clazz, entity);
+//					
+//				JSONUtil.copy(clazz, entityController);
+//				JSONUtil.copy(entity, entityController);
+//				entityController.setScene(scene);
+//				EntityControllerInvoker.invoke(entityController, "create");
+				createEntity(scene, clazz, entity);
 			}
 		}
 		return scene;
 	}
 	
-	private static EntityController resolveEntityController(JSONObject clazz, JSONObject entity) throws Exception {
-		String handler;
+	public void createEntity(GameScene scene, JSONObject clazz, JSONObject object) throws Exception {
+		EntityController entityController = (EntityController)resolveEntityController(clazz, object);
+			
+		JSONUtil.copy(clazz, entityController);
+		JSONUtil.copy(object, entityController);
+		entityController.setScene(scene);
+		EntityControllerInvoker.invoke(entityController, "create");
+	}
+	
+	private Object resolveEntityController(JSONObject clazz, JSONObject entity) throws Exception {
+		String handler = "";
 		if (entity.has("handler")) {
 			handler = entity.getString("handler");
 		} else if (clazz.has("handler")) {
 			handler = clazz.getString("handler");
-		} else {
-			return new DefaultController();
 		}
 		
-		Class<? extends EntityController> entityControllerClass = ENTITY_CONROLLERS.get(handler);
+		Class<?> entityControllerClass = controllers.get(handler);
 		if (entityControllerClass != null) {
 			return entityControllerClass.newInstance();
 		}

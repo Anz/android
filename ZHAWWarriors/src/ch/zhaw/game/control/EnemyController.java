@@ -7,6 +7,7 @@ import org.andengine.extension.physics.box2d.util.constants.PhysicsConstants;
 import org.andengine.opengl.texture.region.TextureRegionFactory;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 
+import ch.zhaw.game.entity.Controller;
 import ch.zhaw.game.entity.Entity;
 import ch.zhaw.game.entity.EntityController;
 import ch.zhaw.game.entity.Event;
@@ -14,6 +15,7 @@ import ch.zhaw.game.util.MathUtil;
 
 import com.badlogic.gdx.math.Vector2;
 
+@Controller(name="enemy")
 public class EnemyController extends EntityController implements IUpdateHandler {
 	private Entity target;
 	private boolean dead = false;

@@ -144,12 +144,11 @@ public class GameScene extends Scene  /*ContactListener,*/ {
 		
 		// z index
 		for (Entity entity : entities) {
-			int zindex = -1000000;
-			
 			if (entity.isDynamic()) {
-				zindex = Math.round(entity.getBody().getPosition().y * 1000);
+				int zindex = Math.round(entity.getBody().getPosition().y * 1000);
+				entity.getSprite().setZIndex(zindex);
 			}
-			entity.getSprite().setZIndex(zindex);
+			
 		}
 		sortChildren();
 	}

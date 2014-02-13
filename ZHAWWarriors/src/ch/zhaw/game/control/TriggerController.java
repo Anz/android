@@ -1,25 +1,34 @@
 package ch.zhaw.game.control;
 
+import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.entity.sprite.AnimatedSprite;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.util.Log;
 import ch.zhaw.game.activity.AbstractBaseActivity;
 import ch.zhaw.game.activity.GameActivity;
+import ch.zhaw.game.entity.Controller;
 import ch.zhaw.game.entity.EntityController;
 import ch.zhaw.game.entity.Event;
 import ch.zhaw.game.entity.GameCamera;
 import ch.zhaw.game.entity.TextHandler;
+import ch.zhaw.game.scene.GameSceneFactory;
 
-public class TriggerController extends EntityController {
+@Controller(name = "trigger")
+public class TriggerController extends EntityController implements IUpdateHandler {
 	protected String event;
 	protected String load;
 	protected String text;
+	protected String generate;
+	protected boolean triggered = false;
 	private int frame = 0;
 	
 	@Event(filter="create")
 	protected void onCreate() {
 		super.create();
+		scene.registerUpdateHandler(this);
 	}
 
 	@Event
@@ -29,6 +38,17 @@ public class TriggerController extends EntityController {
 			return;
 		}
 		
+		triggered = true;
+	}
+
+	@Override
+	public void onUpdate(float pSecondsElapsed) {
+		if (!triggered) {
+			return;
+		}
+		triggered = false;
+		
+
 		// load action
 		if (load != null) {
 			Activity activity = entity.getScene().getResourceManager().getActivity();
@@ -47,11 +67,43 @@ public class TriggerController extends EntityController {
 			camera.getHUD().attachChild(new TextHandler(scene, scene.getResourceManager(), text, 0, camera.getHeight()-200, camera.getWidth(), 200, 0.1f));
 		}
 		
+		// generate action
+		if (generate != null) {
+			try {
+				JSONObject object = new JSONObject();
+				object.put("x", entity.getSprite().getX());
+				object.put("y",0f);
+				object.put("width", 1000000);
+				object.put("height", 1000000);
+				object.put("zindex", 10000);
+				object.put("alpha", 0.1f);
+				object.put("red", 0f);
+				object.put("green", 0f);
+				object.put("blue", 0f);
+				object.put("handler", "animate");
+				object.put("event", "create");
+				object.put("property", "alpha");
+				object.put("target", "1f");
+				object.put("interval", 0.001f);
+				object.put("seconds", 0.01f);
+				new GameSceneFactory(scene.getResourceManager(), "ch.zhaw.game.control").createEntity(scene, new JSONObject(), object);
+			} catch (Exception e) {
+				Log.e(this.toString(), "cannot generate entity", e);
+			}
+		}
+		
 		// if has animation
 		if (entity.getSprite() instanceof AnimatedSprite) {
 			frame = (frame + 1) % xFrames;
 			AnimatedSprite sprite = (AnimatedSprite)entity.getSprite();
 			sprite.setCurrentTileIndex(frame);
 		}
+		
+	}
+
+	@Override
+	public void reset() {
+		// TODO Auto-generated method stub
+		
 	}
 }

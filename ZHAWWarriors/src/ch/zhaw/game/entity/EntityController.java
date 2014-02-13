@@ -10,6 +10,7 @@ import ch.zhaw.game.scene.GameScene;
 
 public class EntityController {
 	protected GameScene scene;
+	protected String layer;
 	protected Entity entity;
 	protected String id;
 	protected String party;
@@ -17,7 +18,7 @@ public class EntityController {
 	protected float speed; 
 	protected float x;
 	protected float y;
-	protected int z;
+	protected int zindex;
 	protected int xFrames = 1;
 	protected int yFrames = 1;
 	protected boolean dynamic;
@@ -27,21 +28,22 @@ public class EntityController {
 	
 	protected float width;
 	protected float height;
-	protected float red;
-	protected float green;
-	protected float blue;
+	protected float red = 1f;
+	protected float green = 1f;
+	protected float blue = 1f;
+	protected float alpha = 1f;
 
 	protected Entity create() {
 		TiledTextureRegion region = null;
 		if (img == null) {
 			Rectangle rect = new Rectangle(x - width/2, y - height/2, width, height, scene.getResourceManager().getVboManager());
-			rect.setColor(red, green, blue);
 			entity = scene.createEntity(party, x, y, rect, dynamic);
 		} else {
 			region = TextureRegionFactory.extractTiledFromTexture(scene.getResourceManager().getTexture(img), xFrames, yFrames);
 			entity = scene.createEntity(party, x, y, region, dynamic);
 		}
-		entity.getSprite().setZIndex(z);
+		entity.getSprite().setZIndex(zindex);
+		entity.getSprite().setColor(red, green, blue, alpha);
 		entity.setEntityController(this);
 		
 		if (animate > 0) {

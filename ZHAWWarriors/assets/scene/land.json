@@ -2,23 +2,22 @@
 	classes: {
 		player: { party: good, dynamic: true, img: 'knight.svg', handler: 'player', speed: 10, xFrames: 4, yFrames: 3, life: 80 },
 		witch: { party: badass, dynamic: true, img: 'witch2.svg', handler: 'enemy', speed: 3, xFrames: 4, yFrames: 3 },
-		land: { img: 'grass.svg' },
+		land: { img: 'grass.svg', zindex: -100000},
 		box: { dynamic: true, img: 'box_ani.svg', xFrames: 4 },
 		witch_hat: { pickable: true, dynamic: true, img: 'witch_hat.svg', xFrames: 4, y: 200 },
-		fog: { handler: animate, event: create, target: 0, property: alpha, speed: 0.01, interval: -0.001, dynamic: true }
+		fog: { handler: animate, event: create, target: 0, property: alpha, seconds: 0.01, interval: -0.001, zindex: 100000, red: 0, blue: 0, green: 0 }
 	},
 	tiles: [
 		[
 			{ class: "land" },
 			{ class: "player", id: "player", x: -100 },
 			{ handler: trigger, event: create, text: 'Ah....! Ah...!\nWhat a night. Never drunk that much... and never will! At least for today.\nWait a moment.. Where are my clothes?!\nDamn, what happend last night? Can\'t remember.\nNevermind, i should move. It isn\'t save around here.\nAnd there is also nothing to drink here!' },
-			{ class: "fog", width: 1024, height: 1024 }
+			{ class: "fog", width: 1000000, height: 1000000 }
 		],
 		[
 			{ class: "land" },
 			{ class: "witch_hat", x: -200 },
-			{ class: "witch" },
-			{ class: "fog", width: 1024, height: 1024, z: 1000000 }
+			{ class: "witch" }
 		],
 		[
 			{ class: "land" }
@@ -30,7 +29,7 @@
 		],
 		[
 			{ class: "land" },
-			{ class: "box", handler: trigger, event: contact, text: 'the end' }
+			{ class: "box", handler: trigger, event: contact, generate: something, text: 'Little wooden box: Oh dear! You saved my life!\nHow can I thank you?\nUm ...\nMaybe I could ...\nWould you?\nYou wouldn\'t, would you?\nUnnamed super hero: What?\nLittle wooden box: Would you marry me? =)\nUnnamed super hero: WHAT?!\nLittle wooden box: Yeah, why not?\nUnnamed super hero: Damn, I\'m still drunk\nLittle wooden box: Oh I would be such a happy little wooden box\nUnnamed super hero: let me alone you crazy box\nLittle wooden box: How should I call you my treasure?\nUnnamed super hero: *runs*\nLittle wooden box: *follows*\n\n\nTHE END\n\n\n\n\n*help*\n\n*HELP*' }
 		]
 	]
 }

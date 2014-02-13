@@ -1,8 +1,15 @@
 package ch.zhaw.game.util;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Enumeration;
+import java.util.LinkedList;
+import java.util.List;
+
+import android.app.Activity;
+import dalvik.system.DexFile;
 
 public class ReflectionUtil {
 	public static Field getField(Object object, String property) {
@@ -35,6 +42,24 @@ public class ReflectionUtil {
 			}
 		}
 		return null;
+	}
+	
+	public final static List<Class<?>> getClasses(Activity context, String packageName) throws IOException {
+		final List<Class<?>> classes = new LinkedList<Class<?>>();
+		
+		DexFile df = new DexFile(context.getPackageCodePath());
+        for (Enumeration<String> iter = df.entries(); iter.hasMoreElements();) {
+            String className = iter.nextElement();
+            if (className.startsWith(packageName)) {
+            	try {
+					Class<?> clazz = Class.forName(className);
+					classes.add(clazz);
+				} catch (ClassNotFoundException e) {
+					// could not load
+				}
+            }
+        }
+        return classes;
 	}
 	
 	public static Object get(Object object, String property) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {

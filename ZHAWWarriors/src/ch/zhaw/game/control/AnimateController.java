@@ -7,15 +7,17 @@ import org.andengine.engine.handler.timer.ITimerCallback;
 import org.andengine.engine.handler.timer.TimerHandler;
 
 import android.util.Log;
+import ch.zhaw.game.entity.Controller;
 import ch.zhaw.game.entity.EntityController;
 import ch.zhaw.game.entity.Event;
 import ch.zhaw.game.util.ReflectionUtil;
 
+@Controller(name="animate")
 public class AnimateController extends EntityController {
 	protected String event;
 	protected String property;
 	protected float target;
-	protected float speed;
+	protected float seconds;
 	protected float interval;
 	protected Field field;
 	protected Method getter;
@@ -50,7 +52,7 @@ public class AnimateController extends EntityController {
 //			higher = (Float)ReflectionUtil.get(entity.getSprite(), property) < target;
 			higher = getValue() < target;
 			
-			TimerHandler timerHandler = new TimerHandler(speed, new ITimerCallback() {
+			TimerHandler timerHandler = new TimerHandler(seconds, new ITimerCallback() {
 				@Override
 				public void onTimePassed(TimerHandler timerHandler) {
 					try {

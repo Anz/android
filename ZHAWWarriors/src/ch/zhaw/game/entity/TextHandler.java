@@ -28,7 +28,6 @@ public class TextHandler extends org.andengine.entity.Entity  implements ITouchA
 	private IOnSceneTouchListener onSceneTouchListener;
 	
 	public TextHandler(final Scene scene, ResourceManager resourceManager, final String str, float x, float y, float width, float height, final float seconds) {
-		//setZIndex(10000);
 		
 		Rectangle body = new Rectangle(x, y, width, height, resourceManager.getVboManager());
 		body.setColor(Color.BLACK);

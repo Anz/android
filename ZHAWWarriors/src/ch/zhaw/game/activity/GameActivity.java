@@ -23,7 +23,7 @@ public class GameActivity extends AbstractBaseActivity {
 			}
 			
 			// create game scene
-			scene = GameSceneFactory.loadScene(camera, resourceManager, map);
+			scene = new GameSceneFactory(resourceManager, "ch.zhaw.game.control").loadScene(camera, map);
 			
 			// camera should case player
 			Entity player = scene.getEntityById("player");

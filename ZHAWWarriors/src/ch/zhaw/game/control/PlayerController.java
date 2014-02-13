@@ -13,6 +13,7 @@ import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.texture.region.TextureRegionFactory;
 
+import ch.zhaw.game.entity.Controller;
 import ch.zhaw.game.entity.Entity;
 import ch.zhaw.game.entity.EntityController;
 import ch.zhaw.game.entity.Event;
@@ -24,6 +25,7 @@ import ch.zhaw.game.scene.GameScene;
 
 import com.badlogic.gdx.math.Vector2;
 
+@Controller(name="player")
 public class PlayerController extends EntityController implements IOnSceneTouchListener, TouchListener {
 	private Entity targetEntity;
 	private TextureEntity textureEntity;
