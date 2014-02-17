@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 
 public class FixtureUtil {
 	private static int seq = 0;
@@ -23,6 +24,24 @@ public class FixtureUtil {
 		
 		FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.filter.groupIndex = (short) -index;
+		fixtureDef.shape = shape;
+		return fixtureDef;
+	}
+	
+	public static FixtureDef createBoxFixture(String party, float width, float height) {
+		if (!partyGroupMap.containsKey(party)) {
+			partyGroupMap.put(party, seq++);
+		}
+		
+		Integer index = partyGroupMap.get(party);
+		
+		PolygonShape shape = new PolygonShape();
+		shape.setAsBox(width, height);
+		
+		FixtureDef fixtureDef = new FixtureDef();
+		fixtureDef.filter.groupIndex = (short) -index;
+		fixtureDef.friction = 0.01f;
+		fixtureDef.density = 1;
 		fixtureDef.shape = shape;
 		return fixtureDef;
 	}

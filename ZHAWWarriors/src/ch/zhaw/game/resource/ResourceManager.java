@@ -40,7 +40,8 @@ public class ResourceManager {
 		
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 		
-        font = FontFactory.createFromAsset(context.getFontManager(), context.getTextureManager(), 1024, 1024, TextureOptions.BILINEAR, context.getAssets(), "font/cour.ttf", 40, true, Color.WHITE_ABGR_PACKED_INT);
+		int fontSize = getDisplayWidth() / 32;
+        font = FontFactory.createFromAsset(context.getFontManager(), context.getTextureManager(), 1024, 1024, TextureOptions.BILINEAR, context.getAssets(), "font/cour.ttf", fontSize, true, Color.WHITE_ABGR_PACKED_INT);
 		font.load();
 	}
 	

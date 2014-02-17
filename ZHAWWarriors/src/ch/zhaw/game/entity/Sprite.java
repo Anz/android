@@ -23,8 +23,13 @@ public class Sprite extends AnimatedSprite {
 		if (!pSceneTouchEvent.isActionDown()) {
 			return false;
 		}
-		entity.onTouch();
-		scene.onSceneTouchEvent(entity);
+		
+		EntityControllerInvoker.invoke(entity.getEntityController(), "touch");
+		
+//		for (Entity e : scene.getEntities()) {
+//			EntityControllerInvoker.invoke(e.getEntityController(), "onscreen", entity.getEntityController());
+//		}
+		
 		return super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
 	}
 

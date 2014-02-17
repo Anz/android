@@ -1,25 +1,27 @@
 package ch.zhaw.game.scene;
 
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import org.andengine.engine.camera.Camera;
+import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.primitive.Rectangle;
+import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
 import org.andengine.extension.physics.box2d.FixedStepPhysicsWorld;
 import org.andengine.extension.physics.box2d.PhysicsFactory;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
+import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.opengl.util.GLState;
 import org.andengine.util.color.Color;
 
 import ch.zhaw.game.entity.Entity;
+import ch.zhaw.game.entity.EntityControllerInvoker;
 import ch.zhaw.game.entity.GameCamera;
-import ch.zhaw.game.entity.TouchListener;
 import ch.zhaw.game.physics.CollsisionHandler;
 import ch.zhaw.game.resource.ResourceManager;
 import ch.zhaw.game.resource.TextureEntity;
@@ -34,25 +36,68 @@ public class GameScene extends Scene  /*ContactListener,*/ {
 	private GameCamera camera;
 	protected PhysicsWorld physicsWorld;
 	private List<Entity> entities = new LinkedList<Entity>();
-	private Set<Entity> removable = new HashSet<Entity>();
-	private TouchListener touchListener = null;
+	private List<Entity> addable = new LinkedList<Entity>();
+	private List<Entity> removable = new LinkedList<Entity>();
+
 	private float left;
 	private float right;
 	private float bottom;
 	private float top;
 	
-	public GameScene(GameCamera camera, ResourceManager resourceManager, float left, float right, float bottom, float top) {
+	public GameScene(GameCamera camera, ResourceManager resourceManager, Vector2 gravity) {
 		this.camera = camera;
 		this.resourceManager = resourceManager;
 		
-		physicsWorld = new FixedStepPhysicsWorld(60, new Vector2(0, 0), true);
+		physicsWorld = new FixedStepPhysicsWorld(60, gravity, true);
 		registerUpdateHandler(physicsWorld);
 		
 		// set world contact listener
 		physicsWorld.setContactListener(new CollsisionHandler());
 		
-		// create map
-		createMap(left, right, bottom, top);
+		setOnSceneTouchListener(new IOnSceneTouchListener() {
+			@Override
+			public boolean onSceneTouchEvent(Scene pScene, TouchEvent event) {
+				if (!event.isActionDown()) {
+					return false;
+				}
+				
+				for (Entity entity : entities) {
+					EntityControllerInvoker.invoke(entity.getEntityController(), "screen", null, new Vector2(event.getX(), event.getY()));
+				}
+				return false;
+			}
+		});
+		
+		registerUpdateHandler(new IUpdateHandler() {
+			@Override
+			public void reset() {}
+			
+			@Override
+			public void onUpdate(float pSecondsElapsed) {
+				// destroy
+				for (Entity entity : removable) {
+					entities.remove(entity);
+					detachChild(entity.getSprite());
+					entity.getBody().getWorld().destroyBody(entity.getBody());
+				}
+				removable.clear();
+				
+				// create
+				for (Entity entity : addable) {
+					entities.add(entity);
+				}
+				addable.clear();
+				
+				for (Entity entity : entities) {
+					EntityControllerInvoker.invoke(entity.getEntityController(), "update");
+				}
+				
+				// update
+				for (Entity entity : entities) {
+					entity.onUpdate(pSecondsElapsed);
+				}
+			}
+		});
 	}
 
 	public PhysicsWorld getPhysicsWorld() {
@@ -63,7 +108,7 @@ public class GameScene extends Scene  /*ContactListener,*/ {
 		return resourceManager;
 	}
 	
-	private void createMap(float left, float right, float bottom, float top) {
+	public void createMap(float left, float right, float bottom, float top) {
 		this.left = left;
 		this.right = right;
 		this.bottom = bottom;
@@ -93,7 +138,8 @@ public class GameScene extends Scene  /*ContactListener,*/ {
 		if (dynamic) {
 			entity.createFixture(FixtureUtil.createCircularFixture(party));
 		}
-		entities.add(entity);
+//		entities.add(entity);
+		addable.add(entity);
 		attachChild(entity.getSprite());
 		return entity;
 	}
@@ -103,7 +149,8 @@ public class GameScene extends Scene  /*ContactListener,*/ {
 		if (dynamic) {
 			entity.createFixture(FixtureUtil.createCircularFixture(party));
 		}
-		entities.add(entity);
+//		entities.add(entity);
+		addable.add(entity);
 		attachChild(entity.getSprite());
 		return entity;
 	}
@@ -120,23 +167,23 @@ public class GameScene extends Scene  /*ContactListener,*/ {
 		removable.add(entity);
 	}
 	
-	@Override
-	protected void onManagedUpdate(float seconds) {
-		super.onManagedUpdate(seconds);
-		
-		// destroy
-		for (Entity entity : removable) {
-			entities.remove(entity);
-			detachChild(entity.getSprite());
-			entity.getBody().getWorld().destroyBody(entity.getBody());
-		}
-		removable.clear();
-		
-		// update
-		for (Entity entity : entities) {
-			entity.onUpdate(seconds);
-		}
-	}
+//	@Override
+//	protected void onManagedUpdate(float seconds) {
+//		super.onManagedUpdate(seconds);
+//		
+//		// destroy
+//		for (Entity entity : removable) {
+//			entities.remove(entity);
+//			detachChild(entity.getSprite());
+//			entity.getBody().getWorld().destroyBody(entity.getBody());
+//		}
+//		removable.clear();
+//		
+//		// update
+//		for (Entity entity : entities) {
+//			entity.onUpdate(seconds);
+//		}
+//	}
 
 	@Override
 	protected void preDraw(GLState pGLState, Camera pCamera) {
@@ -151,17 +198,6 @@ public class GameScene extends Scene  /*ContactListener,*/ {
 			
 		}
 		sortChildren();
-	}
-	
-	public boolean onSceneTouchEvent(Entity entity) {
-		if (touchListener != null && !isIgnoreUpdate()) {
-			touchListener.onTouch(entity);
-		}
-		return false;
-	}
-	
-	public void registerTouchListener(TouchListener touchListener) {
-		this.touchListener = touchListener;
 	}
 
 	public float getLeft() {

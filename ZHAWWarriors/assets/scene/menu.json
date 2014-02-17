@@ -9,7 +9,8 @@
 			
 			{ img: 'title.svg', y:  -300 },
 			{ class: menu, img: 'start.svg', load: 'scene/land.json', y: -150 },
-			{ class: menu, img: 'options.svg', load: 'scene/options.json' }
+			{ class: menu, img: 'options.svg', load: 'scene/options.json' },
+			{ class: menu, img: 'extras.svg', load: 'scene/physic.json', y: 150 }
 		]
 	]
 }

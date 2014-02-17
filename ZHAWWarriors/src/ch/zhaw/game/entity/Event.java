@@ -9,4 +9,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Event {
 	String filter() default "";
+	long delay() default 0;
+	long called() default 0;
 }

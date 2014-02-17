@@ -10,6 +10,8 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.badlogic.gdx.math.Vector2;
+
 import ch.zhaw.game.entity.Controller;
 import ch.zhaw.game.entity.EntityController;
 import ch.zhaw.game.entity.EntityControllerInvoker;
@@ -48,8 +50,26 @@ public class GameSceneFactory {
 		JSONObject classes = map.getJSONObject("classes");
 		JSONArray tiles = map.getJSONArray("tiles");
 		
+		Vector2 gravity = new Vector2();
+		boolean boundries = false;
+		
+		if (map.has("settings")) {
+			JSONObject settings = map.getJSONObject("settings");
+			if (settings.has("gravity")) {
+				JSONUtil.copy((JSONObject)settings.get("gravity"), gravity);
+			}
+			if (settings.has("boundries")) {
+				boundries = settings.getBoolean("boundries");
+			}
+		}
+		
+		
+		
 		// create game scene
-		GameScene scene = new GameScene(camera, resourceManager, -512, tiles.length() * 1024-512, -50, 512);
+		GameScene scene = new GameScene(camera, resourceManager, gravity);
+		if (boundries) {
+			scene.createMap(-512, tiles.length() * 1024-512, -50, 512);
+		}
 
 		// for each tile
 		for (int i = 0; i < tiles.length(); i++) {
@@ -65,16 +85,10 @@ public class GameSceneFactory {
 				
 				clazz.put("x", tileX + (clazz.has("x") ? clazz.getDouble("x") : 0));
 				entity.put("x", tileX + (entity.has("x") ? entity.getDouble("x") : 0));
-				
-//				EntityController entityController = resolveEntityController(clazz, entity);
-//					
-//				JSONUtil.copy(clazz, entityController);
-//				JSONUtil.copy(entity, entityController);
-//				entityController.setScene(scene);
-//				EntityControllerInvoker.invoke(entityController, "create");
 				createEntity(scene, clazz, entity);
 			}
 		}
+		scene.onUpdate(0);
 		return scene;
 	}
 	

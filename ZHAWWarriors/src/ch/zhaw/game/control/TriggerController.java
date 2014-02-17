@@ -2,7 +2,6 @@ package ch.zhaw.game.control;
 
 import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.entity.sprite.AnimatedSprite;
-import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,17 +10,17 @@ import ch.zhaw.game.activity.AbstractBaseActivity;
 import ch.zhaw.game.activity.GameActivity;
 import ch.zhaw.game.entity.Controller;
 import ch.zhaw.game.entity.EntityController;
+import ch.zhaw.game.entity.EntityControllerInvoker;
 import ch.zhaw.game.entity.Event;
 import ch.zhaw.game.entity.GameCamera;
 import ch.zhaw.game.entity.TextHandler;
-import ch.zhaw.game.scene.GameSceneFactory;
 
 @Controller(name = "trigger")
 public class TriggerController extends EntityController implements IUpdateHandler {
 	protected String event;
 	protected String load;
 	protected String text;
-	protected String generate;
+	protected EntityController generate = new EntityController();
 	protected boolean triggered = false;
 	private int frame = 0;
 	
@@ -43,6 +42,10 @@ public class TriggerController extends EntityController implements IUpdateHandle
 
 	@Override
 	public void onUpdate(float pSecondsElapsed) {
+		if ("update".equals(event)) {
+			triggered = true;
+		}
+		
 		if (!triggered) {
 			return;
 		}
@@ -70,23 +73,7 @@ public class TriggerController extends EntityController implements IUpdateHandle
 		// generate action
 		if (generate != null) {
 			try {
-				JSONObject object = new JSONObject();
-				object.put("x", entity.getSprite().getX());
-				object.put("y",0f);
-				object.put("width", 1000000);
-				object.put("height", 1000000);
-				object.put("zindex", 10000);
-				object.put("alpha", 0.1f);
-				object.put("red", 0f);
-				object.put("green", 0f);
-				object.put("blue", 0f);
-				object.put("handler", "animate");
-				object.put("event", "create");
-				object.put("property", "alpha");
-				object.put("target", "1f");
-				object.put("interval", 0.001f);
-				object.put("seconds", 0.01f);
-				new GameSceneFactory(scene.getResourceManager(), "ch.zhaw.game.control").createEntity(scene, new JSONObject(), object);
+				EntityControllerInvoker.invoke(generate, "create");
 			} catch (Exception e) {
 				Log.e(this.toString(), "cannot generate entity", e);
 			}

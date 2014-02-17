@@ -24,11 +24,6 @@ public class AnimateController extends EntityController {
 	protected Method setter;
 	protected boolean higher;
 	
-//	@Event(filter="create")
-//	private void onCreate() {
-//		super.create();
-//	}
-	
 	
 	@Event
 	public void onEvent(String name) {

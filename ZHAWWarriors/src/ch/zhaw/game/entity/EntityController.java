@@ -1,11 +1,16 @@
 package ch.zhaw.game.entity;
 
 import org.andengine.entity.primitive.Rectangle;
-import org.andengine.entity.sprite.AnimatedSprite;
+import org.andengine.extension.physics.box2d.util.constants.PhysicsConstants;
 import org.andengine.opengl.texture.region.TextureRegionFactory;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
+import org.andengine.util.color.Color;
 
 import ch.zhaw.game.scene.GameScene;
+import ch.zhaw.game.util.FixtureUtil;
+
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 
 public class EntityController {
@@ -14,7 +19,7 @@ public class EntityController {
 	protected Entity entity;
 	protected String id;
 	protected String party;
-	protected int life;
+	protected int life = 100;
 	protected float speed; 
 	protected float x;
 	protected float y;
@@ -28,10 +33,15 @@ public class EntityController {
 	
 	protected float width;
 	protected float height;
-	protected float red = 1f;
-	protected float green = 1f;
-	protected float blue = 1f;
-	protected float alpha = 1f;
+	
+	// graphic
+	protected Color color = new Color(1, 1, 1, 1);
+	
+	// physic
+	protected String type = "static";
+	protected String rotation = "fixed";
+	protected String bound = "none";
+	protected Vector2 impulse = new Vector2();
 
 	protected Entity create() {
 		TiledTextureRegion region = null;
@@ -42,16 +52,28 @@ public class EntityController {
 			region = TextureRegionFactory.extractTiledFromTexture(scene.getResourceManager().getTexture(img), xFrames, yFrames);
 			entity = scene.createEntity(party, x, y, region, dynamic);
 		}
+		
+		if ("dynamic".equals(type)) {
+			entity.getBody().setType(BodyType.DynamicBody);
+		}
+		
+		if ("box".equals(bound)) {
+			entity.createFixture(FixtureUtil.createBoxFixture(
+					party, 
+					width/2/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, 
+					height/2/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT));
+		}
+		
+		
+		if ("dynamic".equals(rotation)) {
+			entity.getBody().setFixedRotation(false);
+		}
+		
 		entity.getSprite().setZIndex(zindex);
-		entity.getSprite().setColor(red, green, blue, alpha);
+		entity.getSprite().setColor(color);
 		entity.setEntityController(this);
 		
-		if (animate > 0) {
-			if (entity.getSprite() instanceof AnimatedSprite) {
-				AnimatedSprite animatedSprite = (AnimatedSprite)entity.getSprite();
-				animatedSprite.animate(animate);
-			}
-		}
+		entity.getBody().applyLinearImpulse(impulse, entity.getBody().getLocalCenter());
 		
 		return entity;
 	}

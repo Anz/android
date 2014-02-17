@@ -37,8 +37,8 @@ public class TextHandler extends org.andengine.entity.Entity  implements ITouchA
 		border.setColor(Color.WHITE);
 		attachChild(border);
 		
-//		onSceneTouchListener = scene.getOnSceneTouchListener();
-//		scene.setOnSceneTouchListener(null);
+		onSceneTouchListener = scene.getOnSceneTouchListener();
+		scene.setOnSceneTouchListener(null);
 		
 		this.scene = scene;
 		maxLength = str.length();
@@ -123,7 +123,7 @@ public class TextHandler extends org.andengine.entity.Entity  implements ITouchA
 //		scene.unregisterTouchArea(this);
 		unregisterUpdateHandler(timerHandler);
 		detachSelf();
-//		scene.setOnSceneTouchListener(onSceneTouchListener);
+		scene.setOnSceneTouchListener(onSceneTouchListener);
 //		scene.setIgnoreUpdate(false);
 	}
 	

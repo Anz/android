@@ -1,0 +1,29 @@
+{
+	settings: {
+		gravity: { y: 10 }
+	},
+	classes: {
+		box: { width: 50f, height: 50f, type: dynamic, bound: box, rotation: 'dynamic' }
+	},
+	tiles: [
+		[
+			{ y: 300, width: 800, height: 20, bound: box },
+			{ handler: 
+				spawner, 
+				x: -200, 
+				y: 290, 
+				generate: {
+					x: 0,
+					y: 0,
+					width: 50f,
+					height: 50f,
+					color: { red: 0, green: 0, blue: 1, alpha: 0.5 },
+					type: dynamic,
+					bound: box,
+					rotation: dynamic,
+					impulse: { y: -10 }
+				}
+			}
+		]
+	]
+}

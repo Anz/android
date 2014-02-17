@@ -41,12 +41,13 @@ public class Entity {
 		
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.type = dynamic ? BodyType.DynamicBody : BodyType.StaticBody;
+		bodyDef.fixedRotation = false;
 		bodyDef.position.x = x / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT;
 		bodyDef.position.y = y / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT;
 		this.body = scene.getPhysicsWorld().createBody(bodyDef);
 		
 		this.body.setUserData(this);
-		this.body.setFixedRotation(true);
+//		this.body.setFixedRotation(true);
 		if (sprite instanceof RectangularShape) {
 			scene.getPhysicsWorld().registerPhysicsConnector(new PhysicsConnector((RectangularShape)sprite, this.body, true, true));
 		}
@@ -69,7 +70,7 @@ public class Entity {
 		this.body = scene.getPhysicsWorld().createBody(bodyDef);
 		
 		this.body.setUserData(this);
-		this.body.setFixedRotation(true);
+//		this.body.setFixedRotation(true);
 		if (sprite instanceof IAreaShape) {
 			scene.getPhysicsWorld().registerPhysicsConnector(new PhysicsConnector((IAreaShape)sprite, this.body, true, true));
 		}
@@ -99,14 +100,13 @@ public class Entity {
 	}
 	
 	public void onTouch() {	
-		long current = System.currentTimeMillis();
-		if (current - lastTouch < 500) {
-			return;
-		}
-		lastTouch = current;
+//		long current = System.currentTimeMillis();
+//		if (current - lastTouch < 500) {
+//			return;
+//		}
+//		lastTouch = current;
 		
 		if (entityController != null) {
-//			entityController.onTouch();
 			EntityControllerInvoker.invoke(entityController, "touch");
 		}
 	}
@@ -120,21 +120,23 @@ public class Entity {
 			return;
 		}
 		
-		body.setAwake(true);
-		Vector2 current = body.getPosition();
-		
-		// flip
-		if (sprite instanceof AnimatedSprite) {
-			AnimatedSprite animatedSprite = (AnimatedSprite)sprite;
-			animatedSprite.setFlippedHorizontal(current.x >= target.x);
+		if (dynamic) {
+			body.setAwake(true);
+			Vector2 current = body.getPosition();
 			
-			// animation
-			if (!animatedSprite.isAnimationRunning() || animatedSprite.getCurrentTileIndex() > 3) {
-				animatedSprite.animate(FRAME_SPEED, 0, 3, true);
+			// flip
+			if (sprite instanceof AnimatedSprite) {
+				AnimatedSprite animatedSprite = (AnimatedSprite)sprite;
+				animatedSprite.setFlippedHorizontal(current.x >= target.x);
+				
+				// animation
+				if (!animatedSprite.isAnimationRunning() || animatedSprite.getCurrentTileIndex() > 3) {
+					animatedSprite.animate(FRAME_SPEED, 0, 3, true);
+				}
 			}
-		}
 		
-		body.setTransform(MathUtil.move(current, target, entityController.getSpeed(), seconds), body.getAngle());
+			body.setTransform(MathUtil.move(current, target, entityController.getSpeed(), seconds), body.getAngle());
+		}
 	}
 	
 	public void destroy() {
